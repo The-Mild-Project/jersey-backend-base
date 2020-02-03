@@ -13,9 +13,7 @@ import org.bson.Document;
 import db.mongo.documents.util.BaseDocumentEntry;
 import db.mongo.documents.util.TestDocumentEntry;
 
-public class TestDocument implements BaseDocument {
-
-    private Document document;
+public class TestDocument extends BaseDocument {
 
     public TestDocument() {
         this.document = new Document();
@@ -42,7 +40,7 @@ public class TestDocument implements BaseDocument {
      * @param <E>
      */
     @Override
-    public <E extends BaseDocumentEntry> void putData(Class <E> documentEntries, Object... data) {
+    protected <E extends BaseDocumentEntry> void putData(Class <E> documentEntries, Object... data) {
         final E[] values = documentEntries.getEnumConstants();
         for(int i = 0; i < values.length; i++) {
             document.put(values[i].key(), data[i]);
