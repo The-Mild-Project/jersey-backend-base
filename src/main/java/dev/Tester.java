@@ -1,17 +1,15 @@
+package dev;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.mongodb.DB;
-import com.mongodb.client.MongoDatabase;
 
 public class Tester {
-
-    // private static final DB db;
-
     public static void main(String[] args) {
+        System.out.println(String.valueOf(1));
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectWriter prettyMapper = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
