@@ -12,11 +12,12 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import db.mongo.util.MongoCollectionType;
+import db.mongo.util.MongoDatabaseType;
 
 public final class MongoDatabaseFactory {
     // "mongodb+srv://<username>:<password>@<cluster name>.mongodb.net/<database name>";
     private static final String CONNECTION_STRING_FORMAT = "mongodb+srv://%s:%s@%s.mongodb.net/%s";
-    private static final Map<MongoCollectionType, DatabaseProxy> DATABASE_BY_PROXY = new HashMap<>();
+    private static final Map<MongoDatabaseType, DatabaseProxy> DATABASE_BY_PROXY = new HashMap<>();
 
     private final String username;
     private final String password;
@@ -26,26 +27,31 @@ public final class MongoDatabaseFactory {
         this.password = password;
     }
 
-    public void addDatabase(MongoCollectionType type, String clusterName, String databaseName) {
-        DATABASE_BY_PROXY.put(type, new DatabaseProxy(clusterName, databaseName));
+    public MongoDatabaseFactory addDatabase(MongoDatabaseType type, String clusterName) {
+        assert type != MongoDatabaseType.NULL;
+
+        DATABASE_BY_PROXY.put(type, new DatabaseProxy(clusterName, type));
+        return this;
     }
 
-    public MongoDatabase getDatabase(MongoCollectionType type) {
+    public MongoDatabase getDatabase(MongoDatabaseType type) {
         assert DATABASE_BY_PROXY.containsKey(type);
 
         return DATABASE_BY_PROXY.get(type).database;
     }
 
     private final class DatabaseProxy {
+        private final MongoDatabaseType type;
         private final String clusterName;
         private final String databaseName;
 
         private final ConnectionString connectionString;
         private final MongoDatabase database;
 
-        private DatabaseProxy(String clusterName, String databaseName) {
+        private DatabaseProxy(String clusterName, MongoDatabaseType type) {
             this.clusterName = clusterName;
-            this.databaseName = databaseName;
+            this.type = type;
+            this.databaseName = type.databaseName();
             this.connectionString = new ConnectionString(
                 String.format(CONNECTION_STRING_FORMAT, username, password, clusterName, databaseName));
             this.database = initDatabase();

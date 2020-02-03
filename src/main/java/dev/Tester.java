@@ -1,15 +1,25 @@
 package dev;
 
+import java.util.concurrent.TimeUnit;
+
+import org.bson.Document;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import db.mongo.documents.TestDocument;
 
 public class Tester {
     public static void main(String[] args) {
-        System.out.println(String.valueOf(1));
+        final TestDocument doc = new TestDocument();
+        final Document h = doc.putAll(1, 1, 1, "h", "Hello, world!")
+                              .getDocument();
+
+        System.out.println(h);
+
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectWriter prettyMapper = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
