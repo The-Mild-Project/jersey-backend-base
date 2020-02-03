@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>TheMildProject</groupId>
-    <artifactId>jersey-backened-base</artifactId>
+    <artifactId>jersey-backened-template</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencyManagement>
