@@ -4,22 +4,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
-public enum MongoCollectionType {
+public enum MongoCollections {
+    TEST("test"),
     NULL("");
 
-    private static final Map<String, MongoCollectionType> COLLECTIONS_BY_NAME = new HashMap<>();
+    public static final String TEST_NAME = "test";
+
+    private static final Map<String, MongoCollections> COLLECTIONS_BY_NAME = new HashMap<>();
 
     static {
-        Arrays.asList(MongoCollectionType.values())
+        Arrays.asList(MongoCollections.values())
               .forEach(collection -> COLLECTIONS_BY_NAME.put(collection.collectionName, collection));
     }
 
     private String collectionName;
 
-    MongoCollectionType(String collectionName) {
+    MongoCollections(String collectionName) {
         this.collectionName = collectionName;
     }
 
@@ -27,7 +27,7 @@ public enum MongoCollectionType {
         return this.collectionName;
     }
 
-    public static MongoCollectionType getByName(String name) {
+    public static MongoCollections getByName(String name) {
         return COLLECTIONS_BY_NAME.getOrDefault(name, NULL);
     }
 }

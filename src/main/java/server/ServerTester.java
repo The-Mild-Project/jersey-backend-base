@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.mongodb.client.MongoDatabase;
 import db.mongo.MongoDatabaseFactory;
+import db.mongo.util.DocumentWriter;
 import db.mongo.util.MongoDatabaseType;
 import db.mongo.util.MongoEnv;
 
@@ -15,6 +16,10 @@ public class ServerTester {
         Arrays.stream(MongoDatabaseType.values())
               .forEach(type -> factory.addDatabase(type, env.getMongoCluster()));
 
-        final MongoDatabase database = factory.getDatabase(MongoDatabaseType.NULL);
+        final MongoDatabase developTestDb = factory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
+
+        final DocumentWriter writer = new DocumentWriter(developTestDb);
+
+        // developTestDb.getCollection();
     }
 }

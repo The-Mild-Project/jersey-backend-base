@@ -1,5 +1,7 @@
 package db.mongo.documents;
 
+import static db.mongo.util.MongoCollections.TEST_NAME;
+
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
@@ -10,7 +12,7 @@ import annotations.mongo.documents.DocumentSerializable;
 import db.mongo.documents.util.BaseDocument;
 import db.mongo.documents.util.BaseDocumentEntry;
 
-@DocumentSerializable
+@DocumentSerializable(collectionName = TEST_NAME)
 public class TestDocument extends BaseDocument {
 
     public TestDocument() {

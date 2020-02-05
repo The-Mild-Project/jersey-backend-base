@@ -11,7 +11,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import db.mongo.util.MongoCollectionType;
+import db.mongo.util.MongoCollections;
 import db.mongo.util.MongoDatabaseType;
 
 public final class MongoDatabaseFactory {
@@ -73,8 +73,8 @@ public final class MongoDatabaseFactory {
         }
 
         private void initCollections(MongoDatabase db) {
-            Arrays.stream(MongoCollectionType.values())
-                  .filter(type -> type != MongoCollectionType.NULL)
+            Arrays.stream(MongoCollections.values())
+                  .filter(type -> type != MongoCollections.NULL)
                   .forEach(type -> {
                       final String name = type.collectionName();
                       MongoCollection collection = db.getCollection(name);
