@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum MongoDatabaseType {
+    DEVELOP_TEST("develop_test"),
     NULL("");
 
     private static final Map<String, MongoDatabaseType> DATABASE_BY_NAME = new HashMap<>();
