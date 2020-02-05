@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.mongodb.client.MongoDatabase;
 import db.mongo.MongoDatabaseFactory;
-import db.mongo.util.DocumentWriter;
+import db.mongo.util.MongoDocumentWriter;
 import db.mongo.util.MongoDatabaseType;
 import db.mongo.util.MongoEnv;
 
@@ -18,7 +18,7 @@ public class ServerTester {
 
         final MongoDatabase developTestDb = factory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
 
-        final DocumentWriter writer = new DocumentWriter(developTestDb);
+        final MongoDocumentWriter writer = new MongoDocumentWriter(developTestDb);
 
         // developTestDb.getCollection();
     }
