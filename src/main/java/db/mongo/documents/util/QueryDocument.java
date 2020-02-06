@@ -36,4 +36,16 @@ public abstract class QueryDocument<K extends InsertDocumentEntry> implements Ba
             return value;
         }
     }
+
+    public abstract static class Builder<T extends QueryDocument> {
+        private final T queryDocument;
+
+        protected Builder(T queryDocument) {
+            this.queryDocument = queryDocument;
+        }
+
+        public T build() {
+            return queryDocument;
+        }
+    }
 }

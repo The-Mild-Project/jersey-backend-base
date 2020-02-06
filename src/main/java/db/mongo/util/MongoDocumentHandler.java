@@ -25,7 +25,7 @@ public final class MongoDocumentHandler {
     }
 
     public FindIterable<Document> tryFind(QueryDocument document) throws DocumentSerializationException, CollectionNotFoundException {
-        checkIfSerializable(document);
+        checkIfCanQueryDocument(document);
 
         final String collectionName = getCollectionName(document);
         final MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -47,8 +47,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException If the collection name was not found in the database.
      */
     public MongoDocumentHandler tryInsert(InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
-        checkIfSerializable(document);
-        checkIfHasKeys(document);
+        checkIfCanInsertDocument(document);
 
         final String collectionName = getCollectionName(document);
         final MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -63,28 +62,63 @@ public final class MongoDocumentHandler {
         return this;
     }
 
-    private void checkIfSerializable(BaseDocument document) throws DocumentSerializationException {
-        if (Objects.isNull(document)) {
+    private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
+        final boolean isNull = checkIfNull(document);
+        if(isNull) {
             throw new DocumentSerializationException("The object to serialize is null");
         }
 
-        final Class<?> dClass = document.getClass();
-        if (!dClass.isAnnotationPresent(DocumentSerializable.class)) {
-            throw new DocumentSerializationException(String.format("The class %s is not annotated with DocumentSerializable.",
-                                                                   dClass.getSimpleName()));
+        final Validity validDoc = checkIfSerializable(document);
+        if(!validDoc.valid) {
+            throw new DocumentSerializationException(validDoc.message);
         }
     }
 
-    private void checkIfHasKeys(InsertDocument document) throws DocumentSerializationException {
-        if (Objects.isNull(document)) {
+    private void checkIfCanInsertDocument(InsertDocument document) throws DocumentSerializationException {
+        final boolean isNull = checkIfNull(document);
+        if(isNull) {
             throw new DocumentSerializationException("The object to serialize is null");
         }
 
-        final Class<? extends InsertDocumentEntry> entryClass = document.getEntryClass();
-        if (!entryClass.isAnnotationPresent(DocumentEntryKeys.class)) {
-            throw new DocumentSerializationException(String.format("The class %s is not annotated with DocumentEntryKeys.",
-                                                                   entryClass.getSimpleName()));
+        final Validity validDoc = checkIfSerializable(document);
+        if(!validDoc.valid) {
+            throw new DocumentSerializationException(validDoc.message);
         }
+
+        final Validity validKeys = checkIfHasKeys(document);
+        if(!validKeys.valid) {
+            throw new DocumentSerializationException(validKeys.message);
+        }
+    }
+
+    private boolean checkIfNull(BaseDocument document) {
+        return Objects.isNull(document);
+    }
+
+    private Validity checkIfSerializable(BaseDocument document) throws DocumentSerializationException {
+        final Validity validity = new Validity();
+        final Class<?> dClass = document.getClass();
+
+        if (!dClass.isAnnotationPresent(DocumentSerializable.class)) {
+            validity.valid = false;
+            validity.message = String.format("The class %s is not annotated with DocumentSerializable.",
+                                               dClass.getSimpleName());
+        }
+
+        return validity;
+    }
+
+    private Validity checkIfHasKeys(InsertDocument document) throws DocumentSerializationException {
+        final Validity validity = new Validity();
+        final Class<? extends InsertDocumentEntry> entryClass = document.getEntryClass();
+
+        if (!entryClass.isAnnotationPresent(DocumentEntryKeys.class)) {
+            validity.valid = false;
+            validity.message = String.format("The class %s is not annotated with DocumentEntryKeys.",
+                                             entryClass.getSimpleName());
+        }
+
+        return validity;
     }
 
     /**
@@ -97,5 +131,15 @@ public final class MongoDocumentHandler {
         final DocumentSerializable annotation = dClass.getAnnotation(DocumentSerializable.class);
 
         return annotation.collectionName();
+    }
+
+    private final class Validity {
+        private boolean valid;
+        private String message;
+
+        private Validity() {
+            this.valid = true;
+            this.message = "";
+        }
     }
 }
