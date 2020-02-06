@@ -2,21 +2,27 @@ package db.mongo.documents;
 
 import static db.mongo.util.MongoCollections.TEST_NAME;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bson.Document;
 
-import annotations.mongo.documents.DocumentEntry;
 import annotations.mongo.documents.DocumentEntryKeys;
 import annotations.mongo.documents.DocumentSerializable;
-import db.mongo.documents.util.BaseDocument;
-import db.mongo.documents.util.BaseDocumentEntry;
+import db.mongo.documents.util.InsertDocument;
+import db.mongo.documents.util.InsertDocumentEntry;
 
 @DocumentSerializable(collectionName = TEST_NAME)
-public class TestDocument extends BaseDocument {
+public class TestDocument extends InsertDocument {
 
     public TestDocument() {
-        this.document = new Document();
+        super();
+    }
+
+    public TestDocument(long authorId, long channelId, long time, String timeUnit, String reminderMessage) {
+        super();
+        putData(getEntryClass(), authorId, channelId, time, timeUnit, reminderMessage);
     }
 
     /**
@@ -43,43 +49,38 @@ public class TestDocument extends BaseDocument {
     }
 
     @Override
-    protected Class<Entry> getEntryClass() {
+    public Class<Entry> getEntryClass() {
         return Entry.class;
     }
 
     @DocumentEntryKeys
-    private enum Entry implements BaseDocumentEntry {
-        @DocumentEntry(getClassType = long.class) AUTHOR_ID("authorId"),
-        @DocumentEntry(getClassType = long.class) CHANNEL_ID("channelId"),
-        @DocumentEntry(getClassType = long.class) TIME("time"),
-        @DocumentEntry(getClassType = TimeUnit.class) TIME_UNIT("unit"),
-        @DocumentEntry(getClassType = String.class) REMINDER_MESSAGE("reminderMessage");
-        // @DocumentEntry(getClassType = long.class) AUTHOR_ID("authorId", long.class),
-        // @DocumentEntry(getClassType = long.class) CHANNEL_ID("channelId", long.class),
-        // @DocumentEntry(getClassType = long.class) TIME("time", long.class),
-        // @DocumentEntry(getClassType = TimeUnit.class) TIME_UNIT("unit", TimeUnit.class),
-        // @DocumentEntry(getClassType = String.class) REMINDER_MESSAGE("reminderMessage", String.class);
+    enum Entry implements InsertDocumentEntry {
+        AUTHOR_ID("authorId"),
+        CHANNEL_ID("channelId"),
+        TIME("time"),
+        TIME_UNIT("unit"),
+        REMINDER_MESSAGE("reminderMessage");
+
+        private static final Map<String, Entry> ENTRY_BY_NAME = new HashMap<>();
+
+        static {
+            Arrays.asList(Entry.values())
+                  .forEach(e -> ENTRY_BY_NAME.put(e.key(), e));
+        }
 
         final private String key;
-        // final private Class classType;
 
         Entry(String key) {
             this.key = key;
         }
-
-        // Entry(String key, Class classType) {
-        //     this.key = key;
-        //     this.classType = classType;
-        // }
 
         @Override
         public String key() {
             return key;
         }
 
-        // @Override
-        // public Class classType() {
-        //     return classType;
-        // }
+        public static Entry getByKeyName(String key) {
+            return ENTRY_BY_NAME.getOrDefault(key, null);
+        }
     }
 }
