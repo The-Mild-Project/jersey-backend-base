@@ -1,7 +1,6 @@
 package server;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import com.mongodb.client.MongoDatabase;
 import db.mongo.MongoDatabaseFactory;
@@ -23,9 +22,9 @@ public class ServerTester {
         final MongoDatabase developTestDb = factory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
 
         final MongoDocumentHandler writer = new MongoDocumentHandler(developTestDb);
-        
+
         try {
-            writer.tryWrite(new TestDocument(1L, 1L, 1L, "seconds", ""));
+            writer.tryInsert(new TestDocument(1L, 1L, 1L, "seconds", ""));
         } catch(DocumentSerializationException | CollectionNotFoundException e) {
             e.printStackTrace();
         }

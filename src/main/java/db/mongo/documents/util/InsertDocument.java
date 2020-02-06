@@ -22,11 +22,5 @@ public abstract class InsertDocument implements BaseDocument {
         }
     }
 
-    /**
-     * Get back a document
-     * @return document
-     */
-    public abstract Document getDocument();
-
     public abstract Class<? extends InsertDocumentEntry> getEntryClass();
 }

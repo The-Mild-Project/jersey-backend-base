@@ -6,6 +6,7 @@ import org.bson.Document;
 
 import annotations.mongo.documents.DocumentEntryKeys;
 import annotations.mongo.documents.DocumentSerializable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import db.mongo.documents.util.BaseDocument;
@@ -23,8 +24,7 @@ public final class MongoDocumentHandler {
         this.database = database;
     }
 
-    // TODO - create finder w/ Query document
-    public MongoDocumentHandler tryGet(QueryDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+    public FindIterable<Document> tryFind(QueryDocument document) throws DocumentSerializationException, CollectionNotFoundException {
         checkIfSerializable(document);
 
         final String collectionName = getCollectionName(document);
@@ -34,7 +34,9 @@ public final class MongoDocumentHandler {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-        return this;
+        final Document doc = document.getDocument();
+
+        return collection.find(doc);
     }
 
     /**
@@ -44,7 +46,7 @@ public final class MongoDocumentHandler {
      * @throws DocumentSerializationException If the document is not annotated correctly.
      * @throws CollectionNotFoundException If the collection name was not found in the database.
      */
-    public MongoDocumentHandler tryWrite(InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+    public MongoDocumentHandler tryInsert(InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
         checkIfSerializable(document);
         checkIfHasKeys(document);
 
