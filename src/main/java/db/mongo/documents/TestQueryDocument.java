@@ -7,30 +7,14 @@ import java.util.function.Consumer;
 import org.bson.Document;
 
 import annotations.mongo.documents.DocumentSerializable;
+import db.mongo.documents.util.Query;
 import db.mongo.documents.util.QueryDocument;
 
 @DocumentSerializable(collectionName = TEST_NAME)
-public class TestQueryDocument extends QueryDocument<TestDocument.Entry> {
+public class TestQueryDocument extends QueryDocument {
 
-    public TestQueryDocument() {
+    private TestQueryDocument() {
         super();
-    }
-
-    public TestQueryDocument findWhere(Query query) {
-        putQuery(query);
-        return this;
-    }
-
-    public TestQueryDocument findWhere(Query query, Query... optionalQueries) {
-        putQuery(query);
-        putQueries(optionalQueries);
-        return this;
-    }
-
-    public TestQueryDocument findWhere(Consumer<Query> query) {
-        // Query document
-        // query.accept();
-        return this;
     }
 
     @Override
@@ -39,10 +23,49 @@ public class TestQueryDocument extends QueryDocument<TestDocument.Entry> {
     }
 
     public static final class Builder extends QueryDocument.Builder<TestQueryDocument> {
-        protected Builder() {
+        private Query.Builder queryB = new Query.Builder();
+
+        public Builder() {
             super(new TestQueryDocument());
         }
 
-        
+        public Builder addQuery(Query query) {
+            super.putQueries(query);
+            return this;
+        }
+
+        public Builder addQuery(Consumer<Query.Builder> mutator) {
+            Query.Builder testQueryB = this.queryB;
+            mutator.accept(testQueryB);
+            super.putQuery(testQueryB.build());
+            return this;
+        }
+
+        public Builder addQueries(Query... queries) {
+            super.putQueries(queries);
+            return this;
+        }
+
+        public Builder addQueries(Consumer<Query.Builder>... mutators) {
+            final int len = mutators.length;
+            final Query[] queries = new Query[len];
+
+            for(int i = 0; i < len; i++) {
+                final Consumer<Query.Builder> mutator = mutators[i];
+                final Query.Builder testQueryB = this.queryB;
+
+                mutator.accept(testQueryB);
+
+                final Query query = testQueryB.build();
+                queries[i] = query;
+            }
+
+            super.putQueries(queries);
+            return this;
+        }
+
+        public TestQueryDocument build() {
+            return super.build();
+        }
     }
 }

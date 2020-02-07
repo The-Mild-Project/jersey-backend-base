@@ -2,7 +2,7 @@ package db.mongo.documents.util;
 
 import org.bson.Document;
 
-public abstract class QueryDocument<K extends InsertDocumentEntry> implements BaseDocument {
+public abstract class QueryDocument implements BaseDocument {
     protected Document document;
 
     protected QueryDocument() {
@@ -10,31 +10,17 @@ public abstract class QueryDocument<K extends InsertDocumentEntry> implements Ba
     }
 
     protected void putQuery(Query query) {
-        document.put(query.key.key(), query.value);
+        document.put(query.key().key(), query.value());
     }
 
     protected void putQueries(Query... queries) {
         for(final Query query : queries) {
-            document.put(query.key.key(), query.value);
+            document.put(query.key().key(), query.value());
         }
     }
 
-    public final class Query<V> {
-        private final K key;
-        private final V value;
-
-        public Query(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public K key() {
-            return key;
-        }
-
-        public V value() {
-            return value;
-        }
+    public Document document() {
+        return this.document;
     }
 
     public abstract static class Builder<T extends QueryDocument> {
@@ -42,6 +28,16 @@ public abstract class QueryDocument<K extends InsertDocumentEntry> implements Ba
 
         protected Builder(T queryDocument) {
             this.queryDocument = queryDocument;
+        }
+
+        public Builder putQuery(Query query) {
+            queryDocument.putQuery(query);
+            return this;
+        }
+
+        public Builder putQueries(Query... queries) {
+            queryDocument.putQueries(queries);
+            return this;
         }
 
         public T build() {

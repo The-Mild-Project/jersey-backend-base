@@ -54,7 +54,7 @@ public class TestDocument extends InsertDocument {
     }
 
     @DocumentEntryKeys
-    enum Entry implements InsertDocumentEntry {
+    public enum Entry implements InsertDocumentEntry {
         AUTHOR_ID("authorId"),
         CHANNEL_ID("channelId"),
         TIME("time"),
