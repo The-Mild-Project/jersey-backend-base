@@ -2,6 +2,7 @@ package com.the.mild.project.server.resources;
 
 import static com.the.mild.project.server.util.ResourceConfig.PATH_TEST_RESOURCE;
 
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,6 +16,7 @@ import com.the.mild.project.server.jackson.util.JacksonHandler;
 /**
  * Root resource (exposed at "myresource" path)
  */
+@Singleton
 @Path(PATH_TEST_RESOURCE)
 public class TestResource {
 
