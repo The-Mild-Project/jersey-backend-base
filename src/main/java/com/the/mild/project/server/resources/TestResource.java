@@ -1,6 +1,6 @@
 package com.the.mild.project.server.resources;
 
-import static com.the.mild.project.server.util.ResourceConfig.PATH_TEST_RESOURCE;
+import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -8,8 +8,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.util.JacksonHandler;
 

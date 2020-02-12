@@ -1,9 +1,11 @@
-package com.the.mild.project.server.util;
+package com.the.mild.project.server;
 
-import static com.the.mild.project.server.util.ResourceConfig.PathParam.PATH_PARAM_EXAMPLE_ID;
-import static com.the.mild.project.server.util.ResourceConfig.PathParam.PATH_PARAM_ID;
+import static com.the.mild.project.server.ResourceConfig.PathParam.PATH_PARAM_EXAMPLE_ID;
+import static com.the.mild.project.server.ResourceConfig.PathParam.PATH_PARAM_ID;
 
 public final class ResourceConfig {
+    public static final String SERVICE_NAME = "test";
+
     public static final String PATH_TEST_RESOURCE = "testresource";
 
     public static final String PATH_TEST_RESOURCE_PREFIX = "/test";

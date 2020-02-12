@@ -1,5 +1,7 @@
 package com.the.mild.project.server;
 
+import static com.the.mild.project.server.ResourceConfig.SERVICE_NAME;
+
 import java.io.IOException;
 import java.net.URI;
 
@@ -13,7 +15,7 @@ import org.glassfish.jersey.server.ResourceConfig;
  */
 public class Main {
     // Base URI the Grizzly HTTP com.the.mild.project.server will listen on
-    public static final String BASE_URI = "http://localhost:8080/test/";
+    public static final String BASE_URI = "http://localhost:8080/"+ SERVICE_NAME + "/";
 
     /**
      * Starts Grizzly HTTP com.the.mild.project.server exposing JAX-RS resources defined in this application.
@@ -39,7 +41,7 @@ public class Main {
         System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...",
                                          BASE_URI));
         System.in.read();
-        server.stop();
+        server.shutdownNow();
     }
 }
 
