@@ -1,6 +1,8 @@
 package jersey;
 
 import static com.the.mild.project.server.util.ResourceConfig.PATH_TEST_RESOURCE;
+import static com.the.mild.project.server.util.ResourceConfig.PATH_TEST_RESOURCE_WITH_PARAM;
+import static com.the.mild.project.server.util.ResourceConfig.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Client;
@@ -14,6 +16,7 @@ import org.junit.Test;
 
 import com.the.mild.project.server.Main;
 import com.the.mild.project.server.jackson.JacksonTest;
+import com.the.mild.project.server.jackson.ParamTest;
 import com.the.mild.project.server.jackson.util.JacksonHandler;
 
 public class PathsIT {
@@ -43,6 +46,22 @@ public class PathsIT {
         String expectedResult = JacksonHandler.stringify(test);
 
         String responseMsg = target.path(PATH_TEST_RESOURCE).request().get(String.class);
+
+        System.out.println(expectedResult);
+        assertEquals(expectedResult, responseMsg);
+    }
+
+    /**
+     * Test path with params
+     */
+    @Test
+    public void testPathTestResourceWithParam() {
+        final String id = "1";
+        final ParamTest test = new ParamTest(id);
+
+        String expectedResult = JacksonHandler.stringify(test);
+
+        String responseMsg = target.path(String.format(PATH_TEST_RESOURCE_WITH_PARAM_FORMAT, id)).request().get(String.class);
 
         System.out.println(expectedResult);
         assertEquals(expectedResult, responseMsg);
