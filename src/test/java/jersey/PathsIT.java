@@ -1,5 +1,6 @@
 package jersey;
 
+import static com.the.mild.project.server.util.ResourceConfig.PATH_TEST_RESOURCE;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Client;
@@ -11,11 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.the.mild.project.server.Main;
 import com.the.mild.project.server.jackson.JacksonTest;
-import com.the.mild.project.server.resources.TestResource;
+import com.the.mild.project.server.jackson.util.JacksonHandler;
 
 public class PathsIT {
     private HttpServer server;
@@ -38,19 +37,14 @@ public class PathsIT {
      * Test to see that the message "Got it!" is sent in the response.
      */
     @Test
-    public void testGetIt() {
-        final ObjectMapper mapper = new ObjectMapper();
-
+    public void testPathTestResource() {
         final JacksonTest test = new JacksonTest("test", "resource");
 
-        String result = "{}";
-        try {
-            result = mapper.writeValueAsString(test);
-            System.out.println(result);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        String responseMsg = target.path("testresource").request().get(String.class);
-        assertEquals("Got resource!", responseMsg);
+        String expectedResult = JacksonHandler.stringify(test);
+
+        String responseMsg = target.path(PATH_TEST_RESOURCE).request().get(String.class);
+
+        System.out.println(expectedResult);
+        assertEquals(expectedResult, responseMsg);
     }
 }
