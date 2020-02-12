@@ -1,8 +1,8 @@
 package jersey;
 
 import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE;
-import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS_FORMAT;
-import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
+import static com.the.mild.project.server.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS_FORMAT;
+import static com.the.mild.project.server.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Client;

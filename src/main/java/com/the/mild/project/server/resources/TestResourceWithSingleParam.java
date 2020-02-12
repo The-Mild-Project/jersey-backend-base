@@ -1,7 +1,7 @@
 package com.the.mild.project.server.resources;
 
 import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE_WITH_PARAM;
-import static com.the.mild.project.server.ResourceConfig.PathParam.PATH_PARAM_ID;
+import static com.the.mild.project.server.ResourceConfig.PathParams.PATH_PARAM_ID;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
