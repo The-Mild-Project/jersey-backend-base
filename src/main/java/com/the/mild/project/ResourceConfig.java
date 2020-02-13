@@ -7,6 +7,7 @@ public final class ResourceConfig {
     public static final String SERVICE_NAME = "test";
 
     // Resource path names
+    public static final String PATH_TODO_RESOURCE = "todo";
     public static final String PATH_TEST_RESOURCE = "testresource";
     public static final String PATH_TEST_RESOURCE_WITH_PARAM = "{" + PATH_PARAM_ID + "}";
     public static final String PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS = "/{" +

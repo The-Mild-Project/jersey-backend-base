@@ -22,16 +22,21 @@ public final class MongoDatabaseFactory {
     private final String username;
     private final String password;
 
-    public MongoDatabaseFactory(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public MongoDatabaseFactory() {
+        final MongoEnv env = new MongoEnv();
+        final String cluster = env.getMongoCluster();
+
+        this.username = env.getMongoUser();
+        this.password = env.getMongoPass();
+
+        Arrays.stream(MongoDatabaseType.values())
+              .forEach(type -> addDatabase(type, cluster));
     }
 
-    public MongoDatabaseFactory addDatabase(MongoDatabaseType type, String clusterName) {
+    private void addDatabase(MongoDatabaseType type, String clusterName) {
         assert type != MongoDatabaseType.NULL;
 
         DATABASE_BY_PROXY.put(type, new DatabaseProxy(clusterName, type));
-        return this;
     }
 
     public MongoDatabase getDatabase(MongoDatabaseType type) {

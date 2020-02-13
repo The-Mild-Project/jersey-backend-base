@@ -10,8 +10,12 @@ public final class MongoEnv {
     private String mongoPass;
     private String mongoCluster;
     private String mongoDb;
+
+    public MongoEnv() {
+        parseEnv();
+    }
     
-    public MongoEnv parseEnv() {
+    private void parseEnv() {
         this.mongoUser = System.getenv(MONGO_USER_KEY);
         if (mongoUser == null) {
             mongoUser = "";
@@ -31,8 +35,6 @@ public final class MongoEnv {
         if (mongoDb == null) {
             mongoDb = "";
         }
-
-        return this;
     }
     
     public String getMongoUser() {
