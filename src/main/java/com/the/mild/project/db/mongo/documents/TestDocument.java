@@ -1,6 +1,6 @@
 package com.the.mild.project.db.mongo.documents;
 
-import static com.the.mild.project.db.mongo.util.MongoCollections.TEST_NAME;
+import static com.the.mild.project.MongoCollections.TEST_NAME;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import org.bson.Document;
 
 import com.the.mild.project.db.mongo.annotations.DocumentEntryKeys;
 import com.the.mild.project.db.mongo.annotations.DocumentSerializable;
-import com.the.mild.project.db.mongo.documents.util.InsertDocument;
-import com.the.mild.project.db.mongo.documents.util.InsertDocumentEntry;
+import com.the.mild.project.db.mongo.InsertDocument;
+import com.the.mild.project.db.mongo.InsertDocumentEntry;
 
 @DocumentSerializable(collectionName = TEST_NAME)
 public class TestDocument extends InsertDocument {

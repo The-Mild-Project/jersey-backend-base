@@ -1,4 +1,4 @@
-package com.the.mild.project.db.mongo.util;
+package com.the.mild.project;
 
 import java.util.Arrays;
 import java.util.HashMap;

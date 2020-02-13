@@ -1,20 +1,16 @@
-package com.the.mild.project.db.mongo.util;
+package com.the.mild.project.db.mongo;
 
 import java.util.Objects;
 
 import org.bson.Document;
 
-import com.the.mild.project.db.mongo.annotations.DocumentEntryKeys;
-import com.the.mild.project.db.mongo.annotations.DocumentSerializable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.the.mild.project.db.mongo.documents.util.BaseDocument;
-import com.the.mild.project.db.mongo.documents.util.InsertDocument;
-import com.the.mild.project.db.mongo.documents.util.InsertDocumentEntry;
-import com.the.mild.project.db.mongo.documents.util.QueryDocument;
-import com.the.mild.project.db.mongo.util.exceptions.CollectionNotFoundException;
-import com.the.mild.project.db.mongo.util.exceptions.DocumentSerializationException;
+import com.the.mild.project.db.mongo.annotations.DocumentEntryKeys;
+import com.the.mild.project.db.mongo.annotations.DocumentSerializable;
+import com.the.mild.project.db.mongo.exceptions.CollectionNotFoundException;
+import com.the.mild.project.db.mongo.exceptions.DocumentSerializationException;
 
 public final class MongoDocumentHandler {
 

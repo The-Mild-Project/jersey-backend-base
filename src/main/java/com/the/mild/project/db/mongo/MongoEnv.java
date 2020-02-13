@@ -1,4 +1,4 @@
-package com.the.mild.project.db.mongo.util;
+package com.the.mild.project.db.mongo;
 
 public final class MongoEnv {
     private static final String MONGO_USER_KEY = "mongoUser";
@@ -11,11 +11,28 @@ public final class MongoEnv {
     private String mongoCluster;
     private String mongoDb;
     
-    public void parseEnv() {
+    public MongoEnv parseEnv() {
         this.mongoUser = System.getenv(MONGO_USER_KEY);
+        if (mongoUser == null) {
+            mongoUser = "";
+        }
+
         this.mongoPass = System.getenv(MONGO_PASS_KEY);
+        if (mongoPass == null) {
+            mongoPass = "";
+        }
+
         this.mongoCluster = System.getenv(MONGO_CLUSTER_KEY);
+        if (mongoCluster == null) {
+            mongoCluster = "";
+        }
+
         this.mongoDb = System.getenv(MONGO_DATABASE_KEY);
+        if (mongoDb == null) {
+            mongoDb = "";
+        }
+
+        return this;
     }
     
     public String getMongoUser() {

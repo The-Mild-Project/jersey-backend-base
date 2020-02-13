@@ -1,8 +1,8 @@
 package jersey;
 
-import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE;
-import static com.the.mild.project.server.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS_FORMAT;
-import static com.the.mild.project.server.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
+import static com.the.mild.project.ResourceConfig.PATH_TEST_RESOURCE;
+import static com.the.mild.project.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS_FORMAT;
+import static com.the.mild.project.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Client;
@@ -18,7 +18,7 @@ import com.the.mild.project.server.Main;
 import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.MultipleParamsTest;
 import com.the.mild.project.server.jackson.ParamTest;
-import com.the.mild.project.server.jackson.util.JacksonHandler;
+import com.the.mild.project.server.jackson.JacksonHandler;
 
 public class PathsIT {
     private HttpServer server;
@@ -34,7 +34,7 @@ public class PathsIT {
 
     @After
     public void tearDown() throws Exception {
-        server.stop();
+        server.shutdownNow();
     }
 
     /**

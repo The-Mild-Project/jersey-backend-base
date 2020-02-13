@@ -1,4 +1,4 @@
-package com.the.mild.project.db.mongo.documents.util;
+package com.the.mild.project.db.mongo;
 
 public final class Query<K extends InsertDocumentEntry, V> {
     private K key;

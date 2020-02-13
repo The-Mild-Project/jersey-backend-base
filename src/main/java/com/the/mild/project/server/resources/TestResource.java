@@ -1,6 +1,6 @@
 package com.the.mild.project.server.resources;
 
-import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE;
+import static com.the.mild.project.ResourceConfig.PATH_TEST_RESOURCE;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -9,7 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.the.mild.project.server.jackson.JacksonTest;
-import com.the.mild.project.server.jackson.util.JacksonHandler;
+import com.the.mild.project.server.jackson.JacksonHandler;
 
 /**
  * Root resource (exposed at "myresource" path)

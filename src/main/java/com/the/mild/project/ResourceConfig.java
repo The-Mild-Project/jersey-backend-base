@@ -1,7 +1,7 @@
-package com.the.mild.project.server;
+package com.the.mild.project;
 
-import static com.the.mild.project.server.ResourceConfig.PathParams.PATH_PARAM_EXAMPLE_ID;
-import static com.the.mild.project.server.ResourceConfig.PathParams.PATH_PARAM_ID;
+import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_EXAMPLE_ID;
+import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_ID;
 
 public final class ResourceConfig {
     public static final String SERVICE_NAME = "test";

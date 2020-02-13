@@ -1,4 +1,4 @@
-package com.the.mild.project.server.jackson.util;
+package com.the.mild.project.server.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

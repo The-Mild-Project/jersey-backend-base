@@ -1,6 +1,6 @@
 package com.the.mild.project.server;
 
-import static com.the.mild.project.server.ResourceConfig.SERVICE_NAME;
+import static com.the.mild.project.ResourceConfig.SERVICE_NAME;
 
 import java.io.IOException;
 import java.net.URI;

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.ParamTest;
-import com.the.mild.project.server.jackson.util.JacksonHandler;
+import com.the.mild.project.server.jackson.JacksonHandler;
 
 public class JacksonUT {
 

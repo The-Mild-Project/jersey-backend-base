@@ -1,7 +1,7 @@
 package com.the.mild.project.server.resources;
 
-import static com.the.mild.project.server.ResourceConfig.PATH_TEST_RESOURCE_WITH_PARAM;
-import static com.the.mild.project.server.ResourceConfig.PathParams.PATH_PARAM_ID;
+import static com.the.mild.project.ResourceConfig.PATH_TEST_RESOURCE_WITH_PARAM;
+import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_ID;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.the.mild.project.server.jackson.ParamTest;
-import com.the.mild.project.server.jackson.util.JacksonHandler;
+import com.the.mild.project.server.jackson.JacksonHandler;
 
 @Singleton
 @Path(PATH_TEST_RESOURCE_WITH_PARAM)

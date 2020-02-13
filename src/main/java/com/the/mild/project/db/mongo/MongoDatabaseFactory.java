@@ -1,4 +1,4 @@
-package com.the.mild.project.db.mongo.util;
+package com.the.mild.project.db.mongo;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.the.mild.project.MongoCollections;
+import com.the.mild.project.MongoDatabaseType;
 
 public final class MongoDatabaseFactory {
     // "mongodb+srv://<username>:<password>@<cluster name>.mongodb.net/<database name>";
