@@ -1,13 +1,18 @@
 package jersey;
 
 import static com.the.mild.project.ResourceConfig.PATH_TEST_RESOURCE;
+import static com.the.mild.project.ResourceConfig.PATH_TODO_RESOURCE;
 import static com.the.mild.project.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS_FORMAT;
 import static com.the.mild.project.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
@@ -15,10 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.the.mild.project.server.Main;
+import com.the.mild.project.server.jackson.JacksonHandler;
 import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.MultipleParamsTest;
 import com.the.mild.project.server.jackson.ParamTest;
-import com.the.mild.project.server.jackson.JacksonHandler;
+import com.the.mild.project.server.jackson.TodoJson;
 
 public class PathsIT {
     private HttpServer server;
@@ -89,5 +95,26 @@ public class PathsIT {
 
         System.out.println(expectedResult);
         assertEquals(expectedResult, responseMsg);
+    }
+
+    /**
+     * Test todo path
+     */
+    @Test
+    public void testTodoPathWithJsonBody() {
+        final String username = "user";
+        final String message = "message";
+        final TodoJson todo = new TodoJson(username, message, false);
+
+        String stringed = JacksonHandler.stringify(todo);
+        System.out.println(stringed);
+
+        final Response post = target.path(PATH_TODO_RESOURCE)
+                                    .request(MediaType.APPLICATION_JSON_TYPE)
+                                    .post(Entity.entity(stringed, MediaType.APPLICATION_JSON_TYPE));
+
+        final int status = post.getStatus();
+        System.out.printf("status = %s\n", status);
+        assertEquals(status, HTTP_NO_CONTENT);
     }
 }

@@ -30,6 +30,7 @@ public final class MongoDatabaseFactory {
         this.password = env.getMongoPass();
 
         Arrays.stream(MongoDatabaseType.values())
+              .filter(type -> type != MongoDatabaseType.NULL)
               .forEach(type -> addDatabase(type, cluster));
     }
 

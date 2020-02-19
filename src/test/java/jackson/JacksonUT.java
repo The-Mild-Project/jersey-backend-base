@@ -4,11 +4,28 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.ParamTest;
 import com.the.mild.project.server.jackson.JacksonHandler;
+import com.the.mild.project.server.jackson.TodoJson;
 
 public class JacksonUT {
+
+    @Test
+    public void unmarshal() throws JsonProcessingException {
+        final String username = "user";
+        final String message = "message";
+        final boolean completed = false;
+        final String original = String.format("{\"username\":\"%s\",\"message\":\"%s\",\"completed\":%b}",
+                                              username, message, completed);
+
+        TodoJson expected = new TodoJson(username, message, completed);
+        TodoJson result = JacksonHandler.unmarshal(original, TodoJson.class);
+
+
+        assertEquals(String.format("\"%s\" did not match expected \"%s\"", result, expected), expected, result);
+    }
 
     @Test
     public void jacksonTest() {

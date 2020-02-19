@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public final class JacksonHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    public static <T> T unmarshal(String obj, Class<T> type) throws JsonProcessingException {
+        return mapper.readValue(obj, type);
+    }
+
     public static String stringify(Object jackson) {
         String result = "{}";
         try {
