@@ -7,10 +7,12 @@ import java.util.Map;
 public enum MongoCollections {
     TEST("test"),
     TODO("todo"),
+    TODO_LIST("todolist"),
     NULL("");
 
     public static final String TEST_NAME = "test";
     public static final String TODO_NAME = "todo";
+    public static final String TODO_LIST_NAME = "todolist";
 
     private static final Map<String, MongoCollections> COLLECTIONS_BY_NAME = new HashMap<>();
 

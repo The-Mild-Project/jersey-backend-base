@@ -1,13 +1,19 @@
 package com.the.mild.project.server.resources;
 
+import static com.the.mild.project.MongoCollections.*;
+import static com.the.mild.project.ResourceConfig.PATH_CREATE;
 import static com.the.mild.project.ResourceConfig.PATH_TODO_RESOURCE;
+import static com.the.mild.project.ResourceConfig.PATH_UPDATE_BY_ID_PARAM;
+import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_ID;
 import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -18,8 +24,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.the.mild.project.MongoCollections;
 import com.the.mild.project.MongoDatabaseType;
+import com.the.mild.project.db.mongo.DocumentEntry;
 import com.the.mild.project.db.mongo.MongoDatabaseFactory;
+import com.the.mild.project.db.mongo.MongoDocumentHandler;
 import com.the.mild.project.db.mongo.documents.TodoDocument;
+import com.the.mild.project.db.mongo.exceptions.CollectionNotFoundException;
+import com.the.mild.project.db.mongo.exceptions.DocumentSerializationException;
 import com.the.mild.project.server.jackson.JacksonHandler;
 import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.TodoJson;
@@ -43,20 +53,43 @@ public class Todo {
      * to the client as "text/plain" media type.
      */
     @POST
+    @Path(PATH_CREATE)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void putTodo(String todoBody) {
-        System.out.printf("todo = %s\n", todoBody);
-
+    public void addTodo(String todoBody) {
         try {
             TodoJson todo = JacksonHandler.unmarshal(todoBody, TodoJson.class);
-            final Document document = new TodoDocument(todo).getDocument();
+            final TodoDocument document = new TodoDocument(todo);
 
             final MongoDatabase database = mongoFactory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
-            final MongoCollection<Document> collection = database.getCollection(MongoCollections.TODO.name());
+            MongoDocumentHandler mongoHandler = new MongoDocumentHandler(database);
 
-            collection.insertOne(document);
+            mongoHandler.tryInsert(document);
 
-        } catch(JsonProcessingException e) {
+        } catch(JsonProcessingException | DocumentSerializationException | CollectionNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @param id format = _id: ObjectId("5e4c9832489d4d3766a257f4")
+     * @param todoBody
+     */
+    @PUT
+    @Path(PATH_UPDATE_BY_ID_PARAM)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void updateTodo(@PathParam(PATH_PARAM_ID) String id, String todoBody) {
+        try {
+            System.out.println(todoBody);
+            TodoJson todo = JacksonHandler.unmarshal(todoBody, TodoJson.class);
+            final TodoDocument update = new TodoDocument(todo);
+
+            final MongoDatabase database = mongoFactory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
+            MongoDocumentHandler mongoHandler = new MongoDocumentHandler(database);
+
+            mongoHandler.tryUpdateOneById(TODO.collectionName(), id, update);
+
+        } catch(JsonProcessingException | CollectionNotFoundException e) {
             e.printStackTrace();
         }
     }

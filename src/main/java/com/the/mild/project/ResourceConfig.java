@@ -6,8 +6,15 @@ import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_ID;
 public final class ResourceConfig {
     public static final String SERVICE_NAME = "test";
 
+    public static final String PATH_UPDATE_BY_ID_PARAM = "/{" + PATH_PARAM_ID + "}/update";
+    public static final String PATH_CREATE = "/create";
+
     // Resource path names
     public static final String PATH_TODO_RESOURCE = "todo";
+    public static final String PATH_TODO_RESOURCE_CREATE = PATH_TODO_RESOURCE + PATH_CREATE;
+    public static final String PATH_TODO_RESOURCE_UPDATE = PATH_TODO_RESOURCE + PATH_UPDATE_BY_ID_PARAM;
+    public static final String PATH_TODO_RESOURCE_UPDATE_FORMAT = "todo/%s/update";
+
     public static final String PATH_TEST_RESOURCE = "testresource";
     public static final String PATH_TEST_RESOURCE_WITH_PARAM = "{" + PATH_PARAM_ID + "}";
     public static final String PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS = "/{" +

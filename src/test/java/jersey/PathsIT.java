@@ -2,6 +2,9 @@ package jersey;
 
 import static com.the.mild.project.ResourceConfig.PATH_TEST_RESOURCE;
 import static com.the.mild.project.ResourceConfig.PATH_TODO_RESOURCE;
+import static com.the.mild.project.ResourceConfig.PATH_TODO_RESOURCE_CREATE;
+import static com.the.mild.project.ResourceConfig.PATH_TODO_RESOURCE_UPDATE;
+import static com.the.mild.project.ResourceConfig.PATH_TODO_RESOURCE_UPDATE_FORMAT;
 import static com.the.mild.project.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_MULTIPLE_PARAMS_FORMAT;
 import static com.the.mild.project.ResourceConfig.PathFormats.PATH_TEST_RESOURCE_WITH_PARAM_FORMAT;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -107,13 +110,27 @@ public class PathsIT {
         final TodoJson todo = new TodoJson(username, message, false);
 
         String stringed = JacksonHandler.stringify(todo);
-        System.out.println(stringed);
 
-        final Response post = target.path(PATH_TODO_RESOURCE)
+        final Response post = target.path(PATH_TODO_RESOURCE_CREATE)
                                     .request(MediaType.APPLICATION_JSON_TYPE)
                                     .post(Entity.entity(stringed, MediaType.APPLICATION_JSON_TYPE));
 
         final int status = post.getStatus();
+        System.out.printf("status = %s\n", status);
+        assertEquals(status, HTTP_NO_CONTENT);
+    }
+    /**
+     * Test todo path
+     */
+    @Test
+    public void testUpdateTodoPath() {
+        String toUpdate = "{\"completed\":true}";
+
+        final Response put = target.path(String.format(PATH_TODO_RESOURCE_UPDATE_FORMAT, "5e4c8cedba2835240217aa5c"))
+                                   .request(MediaType.APPLICATION_JSON_TYPE)
+                                   .put(Entity.entity(toUpdate, MediaType.APPLICATION_JSON_TYPE));
+
+        final int status = put.getStatus();
         System.out.printf("status = %s\n", status);
         assertEquals(status, HTTP_NO_CONTENT);
     }

@@ -2,15 +2,18 @@ package com.the.mild.project.db.mongo;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.the.mild.project.MongoCollections;
 import com.the.mild.project.MongoDatabaseType;
 
@@ -79,13 +82,19 @@ public final class MongoDatabaseFactory {
         }
 
         private void initCollections(MongoDatabase db) {
+            final MongoIterable<String> collectionNames = db.listCollectionNames();
+            final Set<String> collectionNamesSet = new HashSet<>();
+            collectionNames.forEach((Consumer<String>) collectionNamesSet::add);
+
             Arrays.stream(MongoCollections.values())
                   .filter(type -> type != MongoCollections.NULL)
                   .forEach(type -> {
                       final String name = type.collectionName();
-                      MongoCollection collection = db.getCollection(name);
-                      if(collection == null) {
-                          db.createCollection(name, null);
+
+                      if(!collectionNamesSet.contains(name)) {
+                          System.out.printf("Creating collection \"%s\"\n", name);
+                          collectionNamesSet.add(name);
+                          db.createCollection(name);
                       }
                   });
         }

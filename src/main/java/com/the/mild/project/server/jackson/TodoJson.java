@@ -10,6 +10,9 @@ public class TodoJson {
     @JsonProperty("message") private String message;
     @JsonProperty("completed") private boolean completed;
 
+    public TodoJson() {
+    }
+
     @JsonCreator
     public TodoJson(@JsonProperty("username") String username,
                     @JsonProperty("message") String message,
