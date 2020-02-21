@@ -144,6 +144,19 @@ public final class MongoDocumentHandler {
         System.out.printf("d=%s\n", d);
     }
 
+    public void tryUpdateOneById(String collectionName, String id, Document update) throws CollectionNotFoundException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+        final ObjectId objectId = new ObjectId(id);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        final Document set = new Document(MongoModifiers.SET.getModifier(), update);
+        final Document d = collection.findOneAndUpdate(new Document("_id", objectId), set, findOneAndUpdateOptions);
+        System.out.printf("d=%s\n", d);
+    }
+
     /**
      * Tries to write a document to the database.
      * @param document document

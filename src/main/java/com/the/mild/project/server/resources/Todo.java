@@ -9,29 +9,23 @@ import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.bson.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.the.mild.project.MongoCollections;
 import com.the.mild.project.MongoDatabaseType;
-import com.the.mild.project.db.mongo.DocumentEntry;
 import com.the.mild.project.db.mongo.MongoDatabaseFactory;
 import com.the.mild.project.db.mongo.MongoDocumentHandler;
 import com.the.mild.project.db.mongo.documents.TodoDocument;
 import com.the.mild.project.db.mongo.exceptions.CollectionNotFoundException;
 import com.the.mild.project.db.mongo.exceptions.DocumentSerializationException;
 import com.the.mild.project.server.jackson.JacksonHandler;
-import com.the.mild.project.server.jackson.JacksonTest;
 import com.the.mild.project.server.jackson.TodoJson;
 
 /**
@@ -41,11 +35,15 @@ import com.the.mild.project.server.jackson.TodoJson;
 @Path(PATH_TODO_RESOURCE)
 public class Todo {
     private static final MongoDatabaseFactory mongoFactory;
+    private static final MongoDocumentHandler mongoHandlerDevelopTest;
 
     static {
         mongoFactory = MONGO_DB_FACTORY.orElse(null);
 
         assert mongoFactory != null;
+
+        final MongoDatabase developTestDb = mongoFactory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
+        mongoHandlerDevelopTest = new MongoDocumentHandler(developTestDb);
     }
 
     /**
@@ -60,11 +58,7 @@ public class Todo {
             TodoJson todo = JacksonHandler.unmarshal(todoBody, TodoJson.class);
             final TodoDocument document = new TodoDocument(todo);
 
-            final MongoDatabase database = mongoFactory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
-            MongoDocumentHandler mongoHandler = new MongoDocumentHandler(database);
-
-            mongoHandler.tryInsert(document);
-
+            mongoHandlerDevelopTest.tryInsert(document);
         } catch(JsonProcessingException | DocumentSerializationException | CollectionNotFoundException e) {
             e.printStackTrace();
         }
@@ -81,14 +75,9 @@ public class Todo {
     public void updateTodo(@PathParam(PATH_PARAM_ID) String id, String todoBody) {
         try {
             System.out.println(todoBody);
-            TodoJson todo = JacksonHandler.unmarshal(todoBody, TodoJson.class);
-            final TodoDocument update = new TodoDocument(todo);
+            Document updateDoc = JacksonHandler.stringToDocument(todoBody);
 
-            final MongoDatabase database = mongoFactory.getDatabase(MongoDatabaseType.DEVELOP_TEST);
-            MongoDocumentHandler mongoHandler = new MongoDocumentHandler(database);
-
-            mongoHandler.tryUpdateOneById(TODO.collectionName(), id, update);
-
+            mongoHandlerDevelopTest.tryUpdateOneById(TODO.collectionName(), id, updateDoc);
         } catch(JsonProcessingException | CollectionNotFoundException e) {
             e.printStackTrace();
         }
