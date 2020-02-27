@@ -1,7 +1,5 @@
 package com.the.mild.project.server.resources;
 
-import static com.the.mild.project.ResourceConfig.PATH_USER_AUTH;
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -10,17 +8,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
-import javax.inject.Singleton;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
-@Singleton
-@Path(PATH_USER_AUTH)
 public class UserAuth {
 
     private String CLIENT_ID;
@@ -33,8 +24,6 @@ public class UserAuth {
         transport = new NetHttpTransport();
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
     public void checkAuth(String idTokenString) throws IOException, GeneralSecurityException {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 // Specify the CLIENT_ID of the app that accesses the backend:
@@ -59,6 +48,8 @@ public class UserAuth {
             String locale = (String) payload.get("locale");
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
+
+            System.out.println(payload);
 
             // Use or store profile information
             // ...
