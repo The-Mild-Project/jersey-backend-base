@@ -21,8 +21,8 @@
     </dependencyManagement>
 
     <properties>
-        <maven.compiler.source>9</maven.compiler.source>
-        <maven.compiler.target>9</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <jersey.version>2.30</jersey.version>
         <jackson.version>2.10.2</jackson.version>
         <grizzly.version>2.4.0</grizzly.version>
@@ -130,6 +130,7 @@
                     <processTypes>
                         <web>java $JAVA_OPTS -cp target/classes:target/dependency/* com.the.mild.project.server.Main</web>
                     </processTypes>
+                    <jdkVersion>11</jdkVersion>
                 </configuration>
             </plugin>
         </plugins>
