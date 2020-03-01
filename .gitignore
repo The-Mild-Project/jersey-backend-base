@@ -1,3 +1,4 @@
 /.idea
 /target
 /src/main/java/com/the/mild/project/dev/*
+heroku.properties
