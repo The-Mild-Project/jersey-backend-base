@@ -1,4 +1,4 @@
-package com.the.mild.project.server.resources;
+package com.the.mild.project.server.controllers;
 
 import static com.the.mild.project.MongoCollections.*;
 import static com.the.mild.project.ResourceConfig.PATH_CREATE;
