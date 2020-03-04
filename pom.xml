@@ -29,6 +29,7 @@
         <mongo.java.version>3.12.0</mongo.java.version>
         <junit.version>4.12</junit.version>
         <docker-maven-plugin>0.31.0</docker-maven-plugin>
+        <jar.finalName>${project.name}</jar.finalName>
     </properties>
 
     <dependencies>
