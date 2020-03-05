@@ -21,8 +21,6 @@
     </dependencyManagement>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <jersey.version>2.30</jersey.version>
         <jackson.version>2.10.2</jackson.version>
         <grizzly.version>2.4.0</grizzly.version>
@@ -124,6 +122,14 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
