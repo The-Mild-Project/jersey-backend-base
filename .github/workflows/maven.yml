@@ -3,9 +3,6 @@ name: Java CI
 on: [push]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
   release:
     runs-on: ubuntu-latest
     steps:
