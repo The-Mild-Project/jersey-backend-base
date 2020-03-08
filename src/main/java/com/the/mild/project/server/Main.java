@@ -19,7 +19,7 @@ import com.the.mild.project.db.mongo.MongoDatabaseFactory;
 public class Main {
     // Base URI the Grizzly HTTP com.the.mild.project.server will listen on
     /* TODO: Set HOSTNAME and PORT Variables. Do on cloud and for local development */
-    public static final String PORT = "8080";
+    public static final String PORT = System.getenv("PORT");
     public static final String BASE_URI = "http://0.0.0.0:" + PORT + "/" + SERVICE_NAME + "/";
     public static final Optional<MongoDatabaseFactory> MONGO_DB_FACTORY;
 
