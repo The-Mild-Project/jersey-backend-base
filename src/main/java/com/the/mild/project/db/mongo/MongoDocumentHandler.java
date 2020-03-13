@@ -1,6 +1,7 @@
 package com.the.mild.project.db.mongo;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -48,8 +49,9 @@ public final class MongoDocumentHandler {
     }
 
     public Document tryFindById(String collectionName, String id) throws CollectionNotFoundException {
+        final ObjectId objectId = new ObjectId(id);
         final Document query = new Document();
-        query.put("_id", id);
+        query.put("_id", objectId);
 
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
@@ -58,9 +60,17 @@ public final class MongoDocumentHandler {
         }
 
         final FindIterable<Document> documents = collection.find(query);
-        final Document next = documents.iterator()
-                                       .next();
-        return next;
+        final MongoCursor<Document> iterator = documents.iterator();
+
+        final Document res;
+        if(iterator.hasNext()) {
+            res = documents.iterator()
+                           .next();
+        } else {
+            res = null;
+        }
+
+        return res;
     }
 
     public Document tryFindOne(String collectionName, DocumentEntry<?>... entries) throws CollectionNotFoundException {
@@ -76,9 +86,17 @@ public final class MongoDocumentHandler {
         }
 
         final FindIterable<Document> documents = collection.find(query);
-        final Document next = documents.iterator()
-                                       .next();
-        return next;
+        final MongoCursor<Document> iterator = documents.iterator();
+
+        final Document res;
+        if(iterator.hasNext()) {
+            res = documents.iterator()
+                           .next();
+        } else {
+            res = null;
+        }
+
+        return res;
     }
 
     public void tryUpdateOne(String collectionName, Document original, Document update) throws CollectionNotFoundException {
@@ -180,6 +198,90 @@ public final class MongoDocumentHandler {
         return this;
     }
 
+    /**
+     * Tries to write a document to the database.
+     * @param document document
+     * @return this
+     * @throws DocumentSerializationException If the document is not annotated correctly.
+     * @throws CollectionNotFoundException If the collection name was not found in the database.
+     */
+    public MongoDocumentHandler tryInsert(Document document, String collectionName) throws DocumentSerializationException, CollectionNotFoundException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        collection.insertOne(document);
+
+        return this;
+    }
+
+    /**
+     * Tries to write a document to the database.
+     * @param document document
+     * @return this
+     * @throws DocumentSerializationException If the document is not annotated correctly.
+     * @throws CollectionNotFoundException If the collection name was not found in the database.
+     */
+    public boolean insertIfAbsent(Document document, String collectionName, Consumer<Entries> query) throws DocumentSerializationException, CollectionNotFoundException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        final boolean exists = documentExists(collection, query);
+
+        if(!exists) {
+            collection.insertOne(document);
+        }
+
+        return exists;
+    }
+
+    /**
+     * Tries to write a document to the database.
+     * @param document document
+     * @return this
+     * @throws DocumentSerializationException If the document is not annotated correctly.
+     * @throws CollectionNotFoundException If the collection name was not found in the database.
+     */
+    public boolean insertIfAbsent(InsertDocument document, Consumer<Entries> query) throws DocumentSerializationException, CollectionNotFoundException {
+        checkIfCanInsertDocument(document);
+
+        final String collectionName = getCollectionName(document);
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        final boolean exists = documentExists(collection, query);
+
+        if(!exists) {
+            final Document doc = document.getDocument();
+            collection.insertOne(doc);
+        }
+
+        return exists;
+    }
+
+    private boolean documentExists(MongoCollection<Document> collection, Consumer<Entries> query) {
+        final Entries entries = new Entries();
+        query.accept(entries);
+
+        final Document queryDoc = new Document();
+
+        entries.forEach(d -> queryDoc.put(d.getKey(), d.getValue()));
+
+        final FindIterable<Document> documents = collection.find(queryDoc);
+        final MongoCursor<Document> iterator = documents.iterator();
+
+        return iterator.hasNext();
+    }
+
+
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
         final boolean isNull = checkIfNull(document);
         if(isNull) {
@@ -220,7 +322,7 @@ public final class MongoDocumentHandler {
         if (!dClass.isAnnotationPresent(DocumentSerializable.class)) {
             validity.valid = false;
             validity.message = String.format("The class %s is not annotated with DocumentSerializable.",
-                                               dClass.getSimpleName());
+                                             dClass.getSimpleName());
         }
 
         return validity;
