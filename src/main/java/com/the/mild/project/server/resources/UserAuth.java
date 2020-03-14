@@ -14,25 +14,34 @@ import java.util.Collections;
 
 public class UserAuth {
 
-    private String CLIENT_ID;
-    private JsonFactory jsonFactory;
-    private HttpTransport transport;
+//    private String CLIENT_ID;
+//    private JsonFactory jsonFactory;
+//    private HttpTransport transport;
 
-    public UserAuth(String clientId) {
-        CLIENT_ID = clientId;
-        jsonFactory = new JacksonFactory();
-        transport = new NetHttpTransport();
-    }
+//    public UserAuth(String clientId) {
+//        CLIENT_ID = clientId;
+//        jsonFactory = new JacksonFactory();
+//        transport = new NetHttpTransport();
+//    }
 
-    public void checkAuth(String idTokenString) throws IOException, GeneralSecurityException {
+    public static boolean checkAuth(String clientId, String idTokenString) throws IOException, GeneralSecurityException {
+        JsonFactory jsonFactory = new JacksonFactory();
+        HttpTransport transport = new NetHttpTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 // Specify the CLIENT_ID of the app that accesses the backend:
-                .setAudience(Collections.singletonList(CLIENT_ID))
+                .setAudience(Collections.singletonList(clientId))
                 // Or, if multiple clients access the backend:
                 //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
 
-        GoogleIdToken idToken = verifier.verify(idTokenString);
+        GoogleIdToken idToken;
+
+        try {
+            idToken = verifier.verify(idTokenString);
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
+
         if (idToken != null) {
             Payload payload = idToken.getPayload();
 
@@ -49,13 +58,13 @@ public class UserAuth {
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
 
-            System.out.println(payload);
+            return true;
 
             // Use or store profile information
             // ...
 
         } else {
-            System.out.println("Invalid ID token.");
+            return false;
         }
     }
 }
