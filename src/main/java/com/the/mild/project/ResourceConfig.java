@@ -22,6 +22,7 @@ public final class ResourceConfig {
                                                                              PATH_PARAM_EXAMPLE_ID + "}";
 
     public static final String PATH_USER_AUTH = "/auth";
+    public static final String PATH_USER_RESOURCE = "/user";
 
     // public enum Resource {
     //     PATH_TEST_RESOURCE("testresource");
