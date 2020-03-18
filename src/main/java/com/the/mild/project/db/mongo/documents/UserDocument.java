@@ -22,7 +22,7 @@ public class UserDocument extends InsertDocument {
 
     public UserDocument(UserJson user) {
         super();
-        putData(getEntryClass(), user.getId(), user.getUsername(), user.getEmail());
+        putData(getEntryClass(), user.getId(), user.getEmail());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UserDocument extends InsertDocument {
 
     @Override
     public Document getDocument() {
-        return null;
+        return document;
     }
 
     @DocumentEntryKeys
