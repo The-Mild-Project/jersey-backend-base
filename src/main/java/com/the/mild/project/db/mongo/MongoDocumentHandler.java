@@ -2,6 +2,11 @@ package com.the.mild.project.db.mongo;
 
 import java.util.Objects;
 
+import com.mongodb.DBObject;
+import com.mongodb.client.result.DeleteResult;
+import org.bson.BsonDocument;
+import org.bson.BsonString;
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -178,6 +183,33 @@ public final class MongoDocumentHandler {
         collection.insertOne(doc);
 
         return this;
+    }
+
+    public MongoDocumentHandler tryInsert(String collectionName, InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+        checkIfCanInsertDocument(document);
+
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        final Document doc = document.getDocument();
+        collection.insertOne(doc);
+
+        return this;
+    }
+
+    public DeleteResult TryDelete(String collectionName, Document document) throws CollectionNotFoundException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if (collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        String id = document.getString("_id");
+        BsonDocument bson = new BsonDocument("_id", new BsonString(id));
+        return collection.deleteOne(bson);
     }
 
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
