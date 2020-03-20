@@ -6,34 +6,50 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserJson {
-    @JsonProperty("id") private String id;
+    @JsonProperty("googleId") private String googleId;
     @JsonProperty("email") private String email;
+    @JsonProperty("firstName") private String firstName;
+    @JsonProperty("lastName") private String lastName;
+    @JsonProperty("expirationTime") private int expirationTime;
 
-    public UserJson() {
-
+    @JsonCreator
+    public UserJson(@JsonProperty("email") String email,
+                    @JsonProperty("firstName") String firstName,
+                    @JsonProperty("lastName") String lastName)
+    {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     @JsonCreator
-    public UserJson(@JsonProperty("id") String id,
-                    @JsonProperty("email") String email) {
-        this.id = id;
+    public UserJson(@JsonProperty("googleId") String googleId,
+                    @JsonProperty("email") String email,
+                    @JsonProperty("firstName") String firstName,
+                    @JsonProperty("lastName") String lastName,
+                    @JsonProperty("expirationTime") int expirationTime)
+    {
+        this.googleId = googleId;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.expirationTime = expirationTime;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setGoogleId(String id) {
+        this.googleId = id;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getId() {
-        return id;
+    public String getGoogleId() {
+        return googleId;
     }
 
     @Override
