@@ -2,11 +2,6 @@ package com.the.mild.project.db.mongo;
 
 import java.util.Objects;
 
-import com.mongodb.DBObject;
-import com.mongodb.client.result.DeleteResult;
-import org.bson.BsonDocument;
-import org.bson.BsonString;
-import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -200,16 +195,24 @@ public final class MongoDocumentHandler {
         return this;
     }
 
-    public DeleteResult TryDelete(String collectionName, Document document) throws CollectionNotFoundException {
+    /**
+     * Deletes a given document from a specified collection if it exists.
+     *
+     * @param collectionName
+     * @param document
+     * @return deleted document or null if no document was found
+     * @throws CollectionNotFoundException
+     */
+    public Document tryDelete(String collectionName, Document document) throws CollectionNotFoundException {
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
+            System.out.println("null collection");
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-        String id = document.getString("_id");
-        BsonDocument bson = new BsonDocument("_id", new BsonString(id));
-        return collection.deleteOne(bson);
+        Document result = collection.findOneAndDelete(document);
+        return result;
     }
 
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {

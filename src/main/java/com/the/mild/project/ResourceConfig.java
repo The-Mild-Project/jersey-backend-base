@@ -24,6 +24,7 @@ public final class ResourceConfig {
     public static final String PATH_USER_AUTH = "/auth";
     public static final String PATH_USER_RESOURCE = "/user";
     public static final String PATH_LOGIN = "/login";
+    public static final String PATH_LOGOUT = "/logout";
 
     // public enum Resource {
     //     PATH_TEST_RESOURCE("testresource");

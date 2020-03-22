@@ -4,25 +4,25 @@ import com.the.mild.project.db.mongo.InsertDocument;
 import com.the.mild.project.db.mongo.InsertDocumentEntry;
 import com.the.mild.project.db.mongo.annotations.DocumentEntryKeys;
 import com.the.mild.project.db.mongo.annotations.DocumentSerializable;
-import com.the.mild.project.server.jackson.UserJson;
+import com.the.mild.project.server.jackson.SessionJson;
 import org.bson.Document;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.the.mild.project.MongoCollections.USER_NAME;
+import static com.the.mild.project.MongoCollections.SESSION_NAME;
 
-@DocumentSerializable(collectionName = USER_NAME)
-public class UserDocument extends InsertDocument {
+@DocumentSerializable(collectionName = SESSION_NAME)
+public class SessionDocument extends InsertDocument {
 
-    public UserDocument() {
+    public SessionDocument() {
         super();
     }
 
-    public UserDocument(UserJson user) {
+    public SessionDocument(SessionJson session) {
         super();
-        putData(getEntryClass(), user.getEmail(), user.getFirstName(), user.getLastName());
+        putData(getEntryClass(), session.getGoogleId(), session.getEmail(), session.getExpirationTime());
     }
 
     @Override
@@ -37,14 +37,14 @@ public class UserDocument extends InsertDocument {
 
     @DocumentEntryKeys
     public enum Entry implements InsertDocumentEntry {
+        GOOGLE_ID("googleId"),
         EMAIL("email"),
-        FIRST_NAME("firstName"),
-        LAST_NAME("lastName");
+        EXPIRATION_TIME("expirationTime");
 
         private static final Map<String, Entry> ENTRY_BY_NAME = new HashMap<>();
 
         static {
-            Arrays.asList(UserDocument.Entry.values())
+            Arrays.asList(SessionDocument.Entry.values())
                     .forEach(e -> ENTRY_BY_NAME.put(e.key(), e));
         }
 
