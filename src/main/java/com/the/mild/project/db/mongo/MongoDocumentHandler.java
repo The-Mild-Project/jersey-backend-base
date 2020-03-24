@@ -195,6 +195,23 @@ public final class MongoDocumentHandler {
         return this;
     }
 
+    public MongoDocumentHandler tryInsert(String collectionName, Document document) throws DocumentSerializationException, CollectionNotFoundException {
+
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        FindIterable docs = collection.find(document);
+        if (docs.first() != null) {
+            throw new DocumentSerializationException("Document already exists in collection");
+        }
+
+        collection.insertOne(document);
+        return this;
+    }
+
     /**
      * Deletes a given document from a specified collection if it exists.
      *
@@ -203,7 +220,7 @@ public final class MongoDocumentHandler {
      * @return deleted document or null if no document was found
      * @throws CollectionNotFoundException
      */
-    public Document tryDelete(String collectionName, Document document) throws CollectionNotFoundException {
+    public Document tryDelete(String collectionName, Document document) throws CollectionNotFoundException, DocumentSerializationException {
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
@@ -211,8 +228,11 @@ public final class MongoDocumentHandler {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-        Document result = collection.findOneAndDelete(document);
-        return result;
+        Document session = collection.find(document).first();
+        if (session == null) {
+            throw new DocumentSerializationException("Document does not exist");
+        }
+        return collection.findOneAndDelete(session);
     }
 
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
