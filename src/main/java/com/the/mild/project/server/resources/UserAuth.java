@@ -14,24 +14,27 @@ import java.util.Collections;
 
 public class UserAuth {
 
+    private static final String clientId = "GOOGLE_CLIENT_ID";
+
     /**
      * Checks user auth with Google servers and returns the payload with user data.
      * For testing, idTokenstring can start with test and the payload will be filled with dummy data.
      *
-     * @param clientId Google API client ID
      * @param idTokenString Google Token ID sent from frontend.
      * @return Payload object with user data.
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static Payload checkAuth(String clientId, String idTokenString) throws IOException, GeneralSecurityException {
+    public static Payload checkAuth(String idTokenString) throws IOException, GeneralSecurityException {
+
+        String CLIENT_ID = "GOOGLE_CLIENT_ID";
+        String clientId = System.getenv(CLIENT_ID);
 
         if (idTokenString.startsWith("test")) {
-            int random = (int)(Math.random() * 9999 + 1);
-
+            int identifier = Integer.parseInt(idTokenString.split("-")[1]);
             Payload payload = new Payload();
-            payload.setSubject(String.format("test_%d", random));
-            payload.setEmail(String.format("fake_%d@fake.com", random));
+            payload.setSubject(idTokenString);
+            payload.setEmail(String.format("fake_%d@fake.com", identifier));
             payload.set("given_name", "Fake");
             payload.set("family_name", "Faker");
             payload.set("exp", (long) 1682847246);

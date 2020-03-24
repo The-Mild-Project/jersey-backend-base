@@ -43,7 +43,7 @@ public class User {
         String googleId = header.getHeaderString(GOOGLE_ID);
 
         try {
-            GoogleIdToken.Payload payload = UserAuth.checkAuth("", googleId);
+            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
             Document userDoc = new Document();
             userDoc.put(MONGO_ID_FIELD, payload.getEmail());
             userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
@@ -55,7 +55,7 @@ public class User {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.status(Response.Status.ACCEPTED).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     @GET
@@ -64,7 +64,7 @@ public class User {
         String googleId = header.getHeaderString(GOOGLE_ID);
 
         try {
-            GoogleIdToken.Payload payload = UserAuth.checkAuth("", googleId);
+            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
             Document sessionDoc = new Document();
             sessionDoc.put(MONGO_ID_FIELD, payload.getSubject());
             sessionDoc.put(EMAIL, payload.getEmail());
@@ -76,7 +76,7 @@ public class User {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.status(Response.Status.ACCEPTED).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     @GET
@@ -85,20 +85,20 @@ public class User {
         String googleId = headers.getHeaderString(GOOGLE_ID);
         try {
 //            TODO: NEED TO FIX THIS FOR TESTING, IDS ARE RANDOM RIGHT NOW
-//            GoogleIdToken.Payload payload = UserAuth.checkAuth("", googleId);
-//
-//            // payload is null then the googleId could not be verified, return 401
-//            if (payload != null) {
-//                return Response.status(Response.Status.UNAUTHORIZED).build();
-//            }
+            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+
+            // payload is null then the googleId could not be verified, return 401
+            if (payload == null) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
             Document document = new Document();
             document.put(MONGO_ID_FIELD, googleId);
             Document result = mongoHandlerDevelopTest.tryDelete(SESSION_COLLECTION, document);
-        } catch (CollectionNotFoundException | DocumentSerializationException e) {
+        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.status(Response.Status.ACCEPTED).build();
+        return Response.status(Response.Status.OK).build();
     }
 }
