@@ -26,6 +26,18 @@ public final class ResourceConfig {
     public static final String PATH_LOGIN = "/login";
     public static final String PATH_LOGOUT = "/logout";
 
+    // System wide vars
+    public static final String MONGO_ID_FIELD = "_id";
+    public static final String GOOGLE_ID = "googleId";
+    public static final String SESSION_COLLECTION = "session";
+    public static final String USER_COLLECTION = "user";
+    public static final String EMAIL = "email";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String GIVEN_NAME = "given_name";
+    public static final String FAMILY_NAME = "family_name";
+    public static final String EXPIRATION_DATE = "exp";
+
     // public enum Resource {
     //     PATH_TEST_RESOURCE("testresource");
     //
