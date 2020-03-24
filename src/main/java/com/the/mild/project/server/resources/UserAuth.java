@@ -14,17 +14,30 @@ import java.util.Collections;
 
 public class UserAuth {
 
-//    private String CLIENT_ID;
-//    private JsonFactory jsonFactory;
-//    private HttpTransport transport;
+    /**
+     * Checks user auth with Google servers and returns the payload with user data.
+     * For testing, idTokenstring can start with test and the payload will be filled with dummy data.
+     *
+     * @param clientId Google API client ID
+     * @param idTokenString Google Token ID sent from frontend.
+     * @return Payload object with user data.
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public static Payload checkAuth(String clientId, String idTokenString) throws IOException, GeneralSecurityException {
 
-//    public UserAuth(String clientId) {
-//        CLIENT_ID = clientId;
-//        jsonFactory = new JacksonFactory();
-//        transport = new NetHttpTransport();
-//    }
+        if (idTokenString.startsWith("test")) {
+            int random = (int)(Math.random() * 9999 + 1);
 
-    public static boolean checkAuth(String clientId, String idTokenString) throws IOException, GeneralSecurityException {
+            Payload payload = new Payload();
+            payload.setSubject(String.format("test_%d", random));
+            payload.setEmail(String.format("fake_%d@fake.com", random));
+            payload.set("given_name", "Fake");
+            payload.set("family_name", "Faker");
+            payload.set("exp", (long) 1682847246);
+            return payload;
+        }
+
         JsonFactory jsonFactory = new JacksonFactory();
         HttpTransport transport = new NetHttpTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
@@ -38,33 +51,10 @@ public class UserAuth {
 
         try {
             idToken = verifier.verify(idTokenString);
-        } catch (IllegalArgumentException iae) {
-            return false;
-        }
-
-        if (idToken != null) {
             Payload payload = idToken.getPayload();
-
-            // Print user identifier
-            String userId = payload.getSubject();
-            System.out.println("User ID: " + userId);
-
-            // Get profile information from payload
-            String email = payload.getEmail();
-            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-            String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
-
-            return true;
-
-            // Use or store profile information
-            // ...
-
-        } else {
-            return false;
+            return payload;
+        } catch (IllegalArgumentException iae) {
+            return null;
         }
     }
 }

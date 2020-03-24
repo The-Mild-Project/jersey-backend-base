@@ -1,6 +1,7 @@
 package com.the.mild.project.server.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.mongodb.client.MongoDatabase;
 import com.the.mild.project.MongoDatabaseType;
 import com.the.mild.project.db.mongo.DocumentEntry;
@@ -27,6 +28,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @Singleton
 @Path(PATH_USER_RESOURCE)
@@ -44,51 +47,79 @@ public class User {
         mongoHandlerDevelopTest = new MongoDocumentHandler(developTestDb);
     }
 
-    @POST
+    @GET
     @Path(PATH_CREATE)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(String userInfo) {
-        try {
-            UserJson user = JacksonHandler.unmarshal(userInfo, UserJson.class);
-            final UserDocument document = new UserDocument(user);
+//    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createUser(@Context HttpHeaders header) {
+        String googleId = header.getHeaderString(GOOGLE_ID);
 
-            mongoHandlerDevelopTest.tryInsert(document);
-        } catch(JsonProcessingException | DocumentSerializationException | CollectionNotFoundException e) {
+        try {
+            GoogleIdToken.Payload payload = UserAuth.checkAuth("", googleId);
+            Document userDoc = new Document();
+            userDoc.put(MONGO_ID_FIELD, payload.getEmail());
+            userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
+            userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
+
+            mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
+        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
             e.printStackTrace();
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+//        try {
+//            UserJson user = JacksonHandler.unmarshal(userInfo, UserJson.class);
+//            final UserDocument document = new UserDocument(user);
+//
+//            mongoHandlerDevelopTest.tryInsert(document);
+//        } catch(JsonProcessingException | DocumentSerializationException | CollectionNotFoundException e) {
+//            e.printStackTrace();
+//            return Response.status(404).build();
+//        }
         return Response.status(200).build();
     }
 
-    @POST
+    @GET
     @Path(PATH_LOGIN)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response loginUser(String userInfo) {
-        System.out.println("login");
-        try {
-            SessionJson session = JacksonHandler.unmarshal(userInfo, SessionJson.class);
-            final SessionDocument document = new SessionDocument(session);
+//    @Consumes(MediaType.APPLICATION_JSON)
+    public Response loginUser(@Context HttpHeaders header) {
+        String googleId = header.getHeaderString(GOOGLE_ID);
 
-            mongoHandlerDevelopTest.tryInsert("session", document);
-        } catch (JsonProcessingException | CollectionNotFoundException | DocumentSerializationException e) {
+        try {
+            GoogleIdToken.Payload payload = UserAuth.checkAuth("", googleId);
+            Document sessionDoc = new Document();
+            sessionDoc.put(MONGO_ID_FIELD, payload.getSubject());
+            sessionDoc.put(EMAIL, payload.getEmail());
+            sessionDoc.put(EXPIRATION_DATE, payload.getExpirationTimeSeconds());
+
+            mongoHandlerDevelopTest.tryInsert(SESSION_COLLECTION, sessionDoc);
+        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
             e.printStackTrace();
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
         return Response.status(200).build();
     }
 
     @GET
     @Path(PATH_LOGOUT)
     public Response logoutUser(@Context HttpHeaders headers) {
-        String googleId = headers.getHeaderString("googleId");
+        String googleId = headers.getHeaderString(GOOGLE_ID);
         try {
-            DocumentEntry<String> documentEntry = new DocumentEntry<>("googleId", googleId);
-            Document foundDocument = mongoHandlerDevelopTest.tryFindOne("session", documentEntry);
-            Document result = mongoHandlerDevelopTest.tryDelete("session", foundDocument);
-        } catch (CollectionNotFoundException e) {
+//            TODO: NEED TO FIX THIS FOR TESTING, IDS ARE RANDOM RIGHT NOW
+//            GoogleIdToken.Payload payload = UserAuth.checkAuth("", googleId);
+//
+//            // payload is null then the googleId could not be verified, return 401
+//            if (payload != null) {
+//                return Response.status(Response.Status.UNAUTHORIZED).build();
+//            }
+            Document document = new Document();
+            document.put(MONGO_ID_FIELD, googleId);
+            Document result = mongoHandlerDevelopTest.tryDelete(SESSION_COLLECTION, document);
+        } catch (CollectionNotFoundException | DocumentSerializationException e) {
             e.printStackTrace();
             return Response.status(404).build();
         }
+
         return Response.status(200).build();
     }
 }
