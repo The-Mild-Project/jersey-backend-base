@@ -3,3 +3,4 @@
 /src/main/java/com/the/mild/project/dev/*
 heroku.properties
 src/main/java/com/the/mild/project/server/resources/TestMain.java
+*.iml
