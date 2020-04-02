@@ -40,6 +40,7 @@ public class User {
     @GET
     @Path(PATH_CREATE)
     public Response createUser(@Context HttpHeaders header) {
+
         String googleId = header.getHeaderString(GOOGLE_ID);
 
         try {
@@ -52,10 +53,26 @@ public class User {
             mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
         } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+//                    .header("Access-Control-Allow-Origin", "*")
+//                    .header("Access-Control-Allow-Credentials", "true")
+//                    .header("Access-Control-Allow-Headers",
+//                            "origin, content-type, accept, authorization")
+//                    .header("Access-Control-Allow-Methods",
+//                            "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                    .build();
         }
 
-        return Response.status(Response.Status.OK).build();
+        return Response
+                .status(Response.Status.OK)
+//                .header("Access-Control-Allow-Origin", "*")
+//                .header("Access-Control-Allow-Credentials", "true")
+//                .header("Access-Control-Allow-Headers",
+//                        "origin, content-type, accept, authorization")
+//                .header("Access-Control-Allow-Methods",
+//                        "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                .build();
     }
 
     @GET
