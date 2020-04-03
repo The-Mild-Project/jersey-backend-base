@@ -55,23 +55,11 @@ public class User {
             e.printStackTrace();
             return Response
                     .status(Response.Status.NOT_FOUND)
-//                    .header("Access-Control-Allow-Origin", "http://localhost:3000")
-//                    .header("Access-Control-Allow-Credentials", "true")
-//                    .header("Access-Control-Allow-Headers",
-//                            "origin, content-type, accept, authorization")
-//                    .header("Access-Control-Allow-Methods",
-//                            "GET, POST, PUT, DELETE, OPTIONS, HEAD")
                     .build();
         }
 
         return Response
                 .status(Response.Status.OK)
-//                .header("Access-Control-Allow-Origin", "http://localhost:3000")
-//                .header("Access-Control-Allow-Credentials", "true")
-//                .header("Access-Control-Allow-Headers",
-//                        "origin, content-type, accept, authorization")
-//                .header("Access-Control-Allow-Methods",
-//                        "GET, POST, PUT, DELETE, OPTIONS, HEAD")
                 .build();
     }
 
