@@ -180,61 +180,6 @@ public final class MongoDocumentHandler {
         return this;
     }
 
-    public MongoDocumentHandler tryInsert(String collectionName, InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
-        checkIfCanInsertDocument(document);
-
-        final MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        if(collection == null) {
-            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
-        }
-
-        final Document doc = document.getDocument();
-        collection.insertOne(doc);
-
-        return this;
-    }
-
-    public MongoDocumentHandler tryInsert(String collectionName, Document document) throws DocumentSerializationException, CollectionNotFoundException {
-
-        final MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        if(collection == null) {
-            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
-        }
-
-        FindIterable docs = collection.find(document);
-        if (docs.first() != null) {
-            throw new DocumentSerializationException("Document already exists in collection");
-        }
-
-        collection.insertOne(document);
-        return this;
-    }
-
-    /**
-     * Deletes a given document from a specified collection if it exists.
-     *
-     * @param collectionName
-     * @param document
-     * @return deleted document or null if no document was found
-     * @throws CollectionNotFoundException
-     */
-    public Document tryDelete(String collectionName, Document document) throws CollectionNotFoundException, DocumentSerializationException {
-        final MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        if (collection == null) {
-            System.out.println("null collection");
-            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
-        }
-
-        Document session = collection.find(document).first();
-        if (session == null) {
-            throw new DocumentSerializationException("Document does not exist");
-        }
-        return collection.findOneAndDelete(session);
-    }
-
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
         final boolean isNull = checkIfNull(document);
         if(isNull) {
