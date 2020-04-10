@@ -26,10 +26,10 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_TOKEN }}
         with:
-          args: container:push -a foodapp-template web
+          args: container:push -a foodapp-user-service web
       - name: release
         uses: actions/heroku@master
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_TOKEN }}
         with:
-          args: container:release -a foodapp-template web
+          args: container:release -a foodapp-user-service web

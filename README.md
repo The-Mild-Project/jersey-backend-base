@@ -15,6 +15,8 @@ The Action is implemented in .github/workflows/maven.yml
 3. Pushes this image to the heroku container registry associated with our heroku app using Heroku CLI
 4. Releases this image to deploy on our heroku app using Heroku CLI
 
+The app will live here: https://foodapp-user-service.herokuapp.com/
+
 ### Notes
 
 Heroku requires 0.0.0.0 and not localhost as server name for some reason
