@@ -1,4 +1,4 @@
-package com.the.mild.project.server.resources;
+package com.the.mild.project.server.controllers;
 
 import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_EXAMPLE_ID;
 import static com.the.mild.project.ResourceConfig.PathParams.PATH_PARAM_ID;
