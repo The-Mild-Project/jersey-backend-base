@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-import com.the.mild.project.util.CorsFilter;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.the.mild.project.db.mongo.MongoDatabaseFactory;
-import org.glassfish.jersey.server.ServerProperties;
 
 /**
  * Main class.
@@ -43,9 +41,6 @@ public class Main {
         // in com.example package
         final ResourceConfig rc = new ResourceConfig().packages("com.the.mild.project.server.resources");
 
-        rc.register(new CorsFilter());
-//        rc.property("jersey.config.server.wadl.disableWadl", true);
-//        rc.property(ServerProperties.METAINF_SERVICES_LOOKUP_DISABLE, true);
         // create and start a new instance of grizzly http com.the.mild.project.server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
