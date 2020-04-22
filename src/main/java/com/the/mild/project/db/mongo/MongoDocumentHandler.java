@@ -1,5 +1,6 @@
 package com.the.mild.project.db.mongo;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import org.bson.Document;
@@ -159,6 +160,7 @@ public final class MongoDocumentHandler {
 
     /**
      * Tries to write a document to the database.
+     *
      * @param document document
      * @return this
      * @throws DocumentSerializationException If the document is not annotated correctly.
@@ -180,6 +182,15 @@ public final class MongoDocumentHandler {
         return this;
     }
 
+    /**
+     * Inserts a new document into a given collection.
+     *
+     * @param collectionName
+     * @param document
+     * @return
+     * @throws DocumentSerializationException
+     * @throws CollectionNotFoundException
+     */
     public MongoDocumentHandler tryInsert(String collectionName, InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
         checkIfCanInsertDocument(document);
 
@@ -195,6 +206,15 @@ public final class MongoDocumentHandler {
         return this;
     }
 
+    /**
+     * Insert a new document into a given collection.
+     *
+     * @param collectionName
+     * @param document
+     * @return
+     * @throws DocumentSerializationException
+     * @throws CollectionNotFoundException
+     */
     public MongoDocumentHandler tryInsert(String collectionName, Document document) throws DocumentSerializationException, CollectionNotFoundException {
 
         final MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -204,12 +224,36 @@ public final class MongoDocumentHandler {
         }
 
         FindIterable docs = collection.find(document);
-        if (docs.first() != null) {
-            throw new DocumentSerializationException("Document already exists in collection");
+        if (docs.first() == null) {
+//            throw new DocumentSerializationException("Document already exists in collection");
+            collection.insertOne(document);
         }
 
-        collection.insertOne(document);
         return this;
+    }
+
+    /**
+     * Get all users in the database, used for admin panel so admins can add or remove users.
+     *
+     * @param collectionName
+     * @return
+     * @throws CollectionNotFoundException
+     */
+    public Document getAllUsers(String collectionName) throws CollectionNotFoundException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if (collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        ArrayList<String> userDocs = new ArrayList<>();
+        for (Document doc: collection.find()) {
+            userDocs.add(doc.toJson());
+        }
+
+        Document allUsers = new Document();
+        allUsers.put("users", userDocs);
+        return allUsers;
     }
 
     /**

@@ -15,8 +15,10 @@ import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -37,46 +39,79 @@ public class User {
         mongoHandlerDevelopTest = new MongoDocumentHandler(developTestDb);
     }
 
-    @GET
-    @Path(PATH_CREATE)
-    public Response createUser(@Context HttpHeaders header) {
+//    @GET
+//    @Path(PATH_CREATE)
+//    public Response createUser(@Context HttpHeaders header) {
+//
+//        String googleId = header.getHeaderString(GOOGLE_ID);
+//
+//        try {
+//            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+//            Document userDoc = new Document();
+//            userDoc.put(MONGO_ID_FIELD, payload.getEmail());
+//            userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
+//            userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
+//
+//            mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
+//        } catch (DocumentSerializationException e) {
+//            System.out.println(e);
+//        } catch (GeneralSecurityException | CollectionNotFoundException | IOException e) {
+//            e.printStackTrace();
+//            return Response
+//                    .status(Response.Status.NOT_FOUND)
+//                    .build();
+//        }
+//
+//        return Response
+//                .status(Response.Status.OK)
+//                .build();
+//    }
+//
+//    @GET
+//    @Path(PATH_LOGIN)
+//    public Response loginUser(@Context HttpHeaders header) {
+//        String googleId = header.getHeaderString(GOOGLE_ID);
+//
+//        try {
+//            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+//            Document sessionDoc = new Document();
+//            sessionDoc.put(MONGO_ID_FIELD, payload.getSubject());
+//            sessionDoc.put(EMAIL, payload.getEmail());
+//            sessionDoc.put(EXPIRATION_DATE, payload.getExpirationTimeSeconds());
+//
+//            mongoHandlerDevelopTest.tryInsert(SESSION_COLLECTION, sessionDoc);
+//        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
+//            e.printStackTrace();
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        }
+//
+//        return Response.status(Response.Status.OK).build();
+//    }
 
-        String googleId = header.getHeaderString(GOOGLE_ID);
+    @GET
+    @Path(PATH_LOGIN)
+    public Response createAndLogin(@Context HttpHeaders headers) {
+        String googleId = headers.getHeaderString(GOOGLE_ID);
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+
+            // Collect user doc
             Document userDoc = new Document();
             userDoc.put(MONGO_ID_FIELD, payload.getEmail());
             userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
             userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
 
             mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
-        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
-            e.printStackTrace();
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .build();
-        }
 
-        return Response
-                .status(Response.Status.OK)
-                .build();
-    }
-
-    @GET
-    @Path(PATH_LOGIN)
-    public Response loginUser(@Context HttpHeaders header) {
-        String googleId = header.getHeaderString(GOOGLE_ID);
-
-        try {
-            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+            // Collect session doc
             Document sessionDoc = new Document();
-            sessionDoc.put(MONGO_ID_FIELD, payload.getSubject());
+            sessionDoc.put(MONGO_ID_FIELD, googleId);
             sessionDoc.put(EMAIL, payload.getEmail());
             sessionDoc.put(EXPIRATION_DATE, payload.getExpirationTimeSeconds());
 
             mongoHandlerDevelopTest.tryInsert(SESSION_COLLECTION, sessionDoc);
-        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -105,5 +140,31 @@ public class User {
         }
 
         return Response.status(Response.Status.OK).build();
+    }
+
+    @GET
+    @Path(PATH_GET_ALL)
+    @Produces("application/json")
+    public Response getAllUsers(@Context HttpHeaders headers) {
+        String googleId = headers.getHeaderString(GOOGLE_ID);
+        Document results;
+
+        System.out.println("THIS IS GETTING HIT");
+
+        try {
+            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+
+            if (payload == null) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+
+            results = mongoHandlerDevelopTest.getAllUsers(USER_COLLECTION);
+
+        } catch (GeneralSecurityException | CollectionNotFoundException |IOException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(results, MediaType.APPLICATION_JSON).build();
     }
 }

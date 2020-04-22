@@ -59,7 +59,7 @@ public class Main {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        System.out.println("PORT" + System.getenv("PORT"));
+        System.out.println("PORT: " + System.getenv("PORT"));
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...",
                                          BASE_URI));
