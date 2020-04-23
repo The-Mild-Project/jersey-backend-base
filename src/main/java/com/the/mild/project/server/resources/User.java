@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 
 @Singleton
 @Path(PATH_USER_RESOURCE)
@@ -165,6 +166,8 @@ public class User {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.ok(results, MediaType.APPLICATION_JSON).build();
+        ArrayList<Document> users = (ArrayList) results.get("users");
+
+        return Response.ok(users, MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", users.size())).build();
     }
 }

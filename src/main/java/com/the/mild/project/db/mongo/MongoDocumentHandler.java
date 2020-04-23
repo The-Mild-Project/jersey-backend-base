@@ -246,9 +246,12 @@ public final class MongoDocumentHandler {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-        ArrayList<String> userDocs = new ArrayList<>();
+        ArrayList<Document> userDocs = new ArrayList<>();
         for (Document doc: collection.find()) {
-            userDocs.add(doc.toJson());
+            String docId = (String) doc.get("_id");
+            doc.put(("id"), docId);
+            doc.remove("_id");
+            userDocs.add(doc);
         }
 
         Document allUsers = new Document();

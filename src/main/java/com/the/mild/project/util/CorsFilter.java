@@ -24,7 +24,8 @@ public class CorsFilter implements ContainerResponseFilter {
                 "GET, POST, PUT, DELETE, OPTIONS, HEAD");
         requestContext.getHeaders().add(
                 "Access-Control-Expose-Headers",
-                "Content-Range"
-        );
+                "Content-Range");
+        responseContext.getHeaders().add(
+                "Access-Control-Expose-Headers", "X-Total-Count");
     }
 }
