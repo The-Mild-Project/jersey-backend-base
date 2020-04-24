@@ -4,3 +4,6 @@
 heroku.properties
 src/main/java/com/the/mild/project/server/resources/TestMain.java
 *.iml
+.classpath
+.project
+.settings/
