@@ -13,9 +13,7 @@ import static com.the.mild.project.ResourceConfig.*;
 import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
 
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -150,8 +148,6 @@ public class User {
         String googleId = headers.getHeaderString(GOOGLE_ID);
         Document results;
 
-        System.out.println("THIS IS GETTING HIT");
-
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
 
@@ -169,5 +165,29 @@ public class User {
         ArrayList<Document> users = (ArrayList) results.get("users");
 
         return Response.ok(users, MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", users.size())).build();
+    }
+
+    @DELETE
+    @Path(PATH_DELETE_USER)
+    @Produces("application/json")
+    public Response deleteUser(@Context HttpHeaders headers, @PathParam("username") String userName) {
+        String googleId = headers.getHeaderString(GOOGLE_ID);
+        Document results;
+        Document res = new Document();
+
+        try {
+            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+
+            if (payload == null) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+
+            results = mongoHandlerDevelopTest.tryDelete(USER_COLLECTION, userName);
+            res.put("id", results.getString("_id"));
+        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.ok(res).build();
     }
 }

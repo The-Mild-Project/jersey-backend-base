@@ -271,7 +271,32 @@ public final class MongoDocumentHandler {
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
-            System.out.println("null collection");
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        Document session = collection.find(document).first();
+        if (session == null) {
+            throw new DocumentSerializationException("Document does not exist");
+        }
+        return collection.findOneAndDelete(session);
+    }
+
+    /**
+     * Deletes a given record based on their ID in a given collection.
+     *
+     * @param collectionName
+     * @param id
+     * @return
+     * @throws CollectionNotFoundException
+     * @throws DocumentSerializationException
+     */
+    public Document tryDelete(String collectionName, String id) throws CollectionNotFoundException, DocumentSerializationException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        Document document = new Document();
+        document.put("_id", id);
+
+        if (collection == null) {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
