@@ -25,7 +25,7 @@ public final class ResourceConfig {
     public static final String PATH_USER_RESOURCE = "/user";
     public static final String PATH_LOGIN = "/login";
     public static final String PATH_LOGOUT = "/logout";
-    public static final String PATH_GET_ALL = "/all";
+    public static final String PATH_GET_ALL = "/all/users";
     public static final String PATH_DELETE_USER = "/all/users/{username}";
 
     // System wide vars
