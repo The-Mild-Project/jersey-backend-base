@@ -1,5 +1,6 @@
 package com.the.mild.project.db.mongo;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import org.bson.Document;
@@ -159,6 +160,7 @@ public final class MongoDocumentHandler {
 
     /**
      * Tries to write a document to the database.
+     *
      * @param document document
      * @return this
      * @throws DocumentSerializationException If the document is not annotated correctly.
@@ -178,6 +180,131 @@ public final class MongoDocumentHandler {
         collection.insertOne(doc);
 
         return this;
+    }
+
+    /**
+     * Inserts a new document into a given collection.
+     *
+     * @param collectionName
+     * @param document
+     * @return
+     * @throws DocumentSerializationException
+     * @throws CollectionNotFoundException
+     */
+    public MongoDocumentHandler tryInsert(String collectionName, InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+        checkIfCanInsertDocument(document);
+
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        final Document doc = document.getDocument();
+        collection.insertOne(doc);
+
+        return this;
+    }
+
+    /**
+     * Insert a new document into a given collection.
+     *
+     * @param collectionName
+     * @param document
+     * @return
+     * @throws DocumentSerializationException
+     * @throws CollectionNotFoundException
+     */
+    public MongoDocumentHandler tryInsert(String collectionName, Document document) throws DocumentSerializationException, CollectionNotFoundException {
+
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        FindIterable docs = collection.find(document);
+        if (docs.first() == null) {
+//            throw new DocumentSerializationException("Document already exists in collection");
+            collection.insertOne(document);
+        }
+
+        return this;
+    }
+
+    /**
+     * Get all users in the database, used for admin panel so admins can add or remove users.
+     *
+     * @param collectionName
+     * @return
+     * @throws CollectionNotFoundException
+     */
+    public Document getAllUsers(String collectionName) throws CollectionNotFoundException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if (collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        ArrayList<Document> userDocs = new ArrayList<>();
+        for (Document doc: collection.find()) {
+            String docId = (String) doc.get("_id");
+            doc.put(("id"), docId);
+            doc.remove("_id");
+            userDocs.add(doc);
+        }
+
+        Document allUsers = new Document();
+        allUsers.put("users", userDocs);
+        return allUsers;
+    }
+
+    /**
+     * Deletes a given document from a specified collection if it exists.
+     *
+     * @param collectionName
+     * @param document
+     * @return deleted document or null if no document was found
+     * @throws CollectionNotFoundException
+     */
+    public Document tryDelete(String collectionName, Document document) throws CollectionNotFoundException, DocumentSerializationException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if (collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        Document session = collection.find(document).first();
+        if (session == null) {
+            throw new DocumentSerializationException("Document does not exist");
+        }
+        return collection.findOneAndDelete(session);
+    }
+
+    /**
+     * Deletes a given record based on their ID in a given collection.
+     *
+     * @param collectionName
+     * @param id
+     * @return
+     * @throws CollectionNotFoundException
+     * @throws DocumentSerializationException
+     */
+    public Document tryDelete(String collectionName, String id) throws CollectionNotFoundException, DocumentSerializationException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        Document document = new Document();
+        document.put("_id", id);
+
+        if (collection == null) {
+            throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
+        }
+
+        Document session = collection.find(document).first();
+        if (session == null) {
+            throw new DocumentSerializationException("Document does not exist");
+        }
+        return collection.findOneAndDelete(session);
     }
 
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
