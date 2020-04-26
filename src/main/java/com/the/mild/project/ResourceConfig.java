@@ -21,12 +21,19 @@ public final class ResourceConfig {
                                                                              PATH_PARAM_ID + "}/example/{" +
                                                                              PATH_PARAM_EXAMPLE_ID + "}";
 
+    // User paths
     public static final String PATH_USER_AUTH = "/auth";
     public static final String PATH_USER_RESOURCE = "/user";
     public static final String PATH_LOGIN = "/login";
     public static final String PATH_LOGOUT = "/logout";
     public static final String PATH_GET_ALL = "/all";
     public static final String PATH_DELETE_USER = "/all/users/{username}";
+
+    // Restaurant paths
+    public static final String PATH_RESTAURANT_RESOURCE = "/restaurant";
+    public static final String PATH_ALL_RESTAURANTS = "/all";
+    public static final String PATH_TO_RESTAURANT = "/{id}";
+    public static final String PATH_TO_REVIEWS = "/reviews/{id}";
 
     // System wide vars
     public static final String MONGO_ID_FIELD = "_id";
