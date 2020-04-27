@@ -38,55 +38,6 @@ public class User {
         mongoHandlerDevelopTest = new MongoDocumentHandler(developTestDb);
     }
 
-//    @GET
-//    @Path(PATH_CREATE)
-//    public Response createUser(@Context HttpHeaders header) {
-//
-//        String googleId = header.getHeaderString(GOOGLE_ID);
-//
-//        try {
-//            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
-//            Document userDoc = new Document();
-//            userDoc.put(MONGO_ID_FIELD, payload.getEmail());
-//            userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
-//            userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
-//
-//            mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
-//        } catch (DocumentSerializationException e) {
-//            System.out.println(e);
-//        } catch (GeneralSecurityException | CollectionNotFoundException | IOException e) {
-//            e.printStackTrace();
-//            return Response
-//                    .status(Response.Status.NOT_FOUND)
-//                    .build();
-//        }
-//
-//        return Response
-//                .status(Response.Status.OK)
-//                .build();
-//    }
-//
-//    @GET
-//    @Path(PATH_LOGIN)
-//    public Response loginUser(@Context HttpHeaders header) {
-//        String googleId = header.getHeaderString(GOOGLE_ID);
-//
-//        try {
-//            GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
-//            Document sessionDoc = new Document();
-//            sessionDoc.put(MONGO_ID_FIELD, payload.getSubject());
-//            sessionDoc.put(EMAIL, payload.getEmail());
-//            sessionDoc.put(EXPIRATION_DATE, payload.getExpirationTimeSeconds());
-//
-//            mongoHandlerDevelopTest.tryInsert(SESSION_COLLECTION, sessionDoc);
-//        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
-//            e.printStackTrace();
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
-//
-//        return Response.status(Response.Status.OK).build();
-//    }
-
     @GET
     @Path(PATH_LOGIN)
     public Response createAndLogin(@Context HttpHeaders headers) {
@@ -143,7 +94,7 @@ public class User {
 
     @GET
     @Path(PATH_GET_ALL)
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers(@Context HttpHeaders headers) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
         Document results;
@@ -169,7 +120,7 @@ public class User {
 
     @DELETE
     @Path(PATH_DELETE_USER)
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@Context HttpHeaders headers, @PathParam("username") String userName) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
         Document results;
