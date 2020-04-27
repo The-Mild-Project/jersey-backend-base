@@ -1,5 +1,10 @@
 package com.the.mild.project.util;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -20,9 +25,11 @@ public class YelpApiConnection {
      * @return
      * @throws BadRequestException
      */
-    public static String businessSearch() throws BadRequestException {
+    public static JsonElement businessSearch() throws BadRequestException {
         String uri = String.format("%s/businesses/search?location=%s", yelpUri, location);
-        return YelpApiConnection.yelpApiRequest(uri);
+        String results = YelpApiConnection.yelpApiRequest(uri);
+        JsonObject json = new JsonParser().parse(results).getAsJsonObject();
+        return json.get("businesses");
     }
 
     /**

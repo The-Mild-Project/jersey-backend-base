@@ -1,5 +1,7 @@
 package com.the.mild.project.server.resources;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.the.mild.project.util.YelpApiConnection;
 
 import javax.inject.Singleton;
@@ -17,10 +19,10 @@ public class Restaurant {
     @Path(PATH_ALL_RESTAURANTS)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRestaurants() {
-
         try {
-            String rests = YelpApiConnection.businessSearch();
-            return Response.ok(rests).build();
+            JsonElement json = YelpApiConnection.businessSearch();
+            int numElements = json.getAsJsonArray().size();
+            return Response.ok(json.toString(), MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", numElements)).build();
         } catch (BadRequestException e) {
             e.printStackTrace();
             return Response.status(400).build();
