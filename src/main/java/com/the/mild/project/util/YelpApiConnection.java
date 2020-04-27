@@ -1,6 +1,5 @@
 package com.the.mild.project.util;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -63,6 +62,7 @@ public class YelpApiConnection {
             WebTarget resource = client.target(String.format(uri));
             return resource.request(MediaType.APPLICATION_JSON).header("Authorization", String.format("Bearer %s", apiKey)).get(String.class);
         } catch (BadRequestException e) {
+            e.printStackTrace();
             throw new BadRequestException(e.getMessage());
         } finally {
             client.close();
