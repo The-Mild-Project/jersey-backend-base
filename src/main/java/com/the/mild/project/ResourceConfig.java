@@ -21,6 +21,32 @@ public final class ResourceConfig {
                                                                              PATH_PARAM_ID + "}/example/{" +
                                                                              PATH_PARAM_EXAMPLE_ID + "}";
 
+    // User paths
+    public static final String PATH_USER_AUTH = "/auth";
+    public static final String PATH_USER_RESOURCE = "/user";
+    public static final String PATH_LOGIN = "/login";
+    public static final String PATH_LOGOUT = "/logout";
+    public static final String PATH_GET_ALL = "/all";
+    public static final String PATH_DELETE_USER = "/all/users/{username}";
+
+    // Restaurant paths
+    public static final String PATH_RESTAURANT_RESOURCE = "/restaurant";
+    public static final String PATH_ALL_RESTAURANTS = "/all";
+    public static final String PATH_TO_RESTAURANT = "/{id}";
+    public static final String PATH_TO_REVIEWS = "/reviews/{id}";
+
+    // System wide vars
+    public static final String MONGO_ID_FIELD = "_id";
+    public static final String GOOGLE_ID = "googleId";
+    public static final String SESSION_COLLECTION = "session";
+    public static final String USER_COLLECTION = "user";
+    public static final String EMAIL = "email";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String GIVEN_NAME = "given_name";
+    public static final String FAMILY_NAME = "family_name";
+    public static final String EXPIRATION_DATE = "exp";
+
     // public enum Resource {
     //     PATH_TEST_RESOURCE("testresource");
     //
