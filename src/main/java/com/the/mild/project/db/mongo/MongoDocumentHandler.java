@@ -3,6 +3,7 @@ package com.the.mild.project.db.mongo;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.google.gson.JsonArray;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -239,23 +240,27 @@ public final class MongoDocumentHandler {
      * @return
      * @throws CollectionNotFoundException
      */
-    public Document getAllUsers(String collectionName) throws CollectionNotFoundException {
+    public JsonArray getAllUsers(String collectionName) throws CollectionNotFoundException {
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-        ArrayList<Document> userDocs = new ArrayList<>();
+//        ArrayList<Document> userDocs = new ArrayList<>();
+
+        JsonArray allUsers = new JsonArray();
+
         for (Document doc: collection.find()) {
             String docId = (String) doc.get("_id");
             doc.put(("id"), docId);
             doc.remove("_id");
-            userDocs.add(doc);
+            allUsers.add(doc.toString());
         }
 
-        Document allUsers = new Document();
-        allUsers.put("users", userDocs);
+//        Document allUsers = new Document();
+//        allUsers.put("users", userDocs);
+
         return allUsers;
     }
 

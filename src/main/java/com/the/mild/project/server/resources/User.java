@@ -1,6 +1,7 @@
 package com.the.mild.project.server.resources;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.gson.JsonArray;
 import com.mongodb.client.MongoDatabase;
 import com.the.mild.project.MongoDatabaseType;
 import com.the.mild.project.db.mongo.MongoDatabaseFactory;
@@ -97,25 +98,19 @@ public class User {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers(@Context HttpHeaders headers) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
-        Document results;
-
+        JsonArray results;
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
-
             if (payload == null) {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
 
             results = mongoHandlerDevelopTest.getAllUsers(USER_COLLECTION);
-
+            return Response.ok(results, MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", results.size())).build();
         } catch (GeneralSecurityException | CollectionNotFoundException |IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-        ArrayList<Document> users = (ArrayList) results.get("users");
-
-        return Response.ok(users, MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", users.size())).build();
     }
 
     @DELETE
