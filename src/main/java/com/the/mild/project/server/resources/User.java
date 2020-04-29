@@ -106,7 +106,7 @@ public class User {
             }
 
             results = mongoHandlerDevelopTest.getAllUsers(USER_COLLECTION);
-            return Response.ok(results, MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", results.size())).build();
+            return Response.ok(results.toString(), MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", results.size())).build();
         } catch (GeneralSecurityException | CollectionNotFoundException |IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
