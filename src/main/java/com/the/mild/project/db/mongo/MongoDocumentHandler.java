@@ -1,9 +1,13 @@
 package com.the.mild.project.db.mongo;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -247,20 +251,42 @@ public final class MongoDocumentHandler {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-//        ArrayList<Document> userDocs = new ArrayList<>();
+//        System.out.println("HERE");
 
+        JsonParser parser = new JsonParser();
         JsonArray allUsers = new JsonArray();
+//        Document allUsers = new Document();
 
         for (Document doc: collection.find()) {
             String docId = (String) doc.get("_id");
             doc.put(("id"), docId);
             doc.remove("_id");
-            allUsers.add(doc.toString());
+//            System.out.println(doc);
+            String docString = doc.toJson();
+//            System.out.println(docString);
+            JsonObject user = parser.parse(docString).getAsJsonObject();
+//            JsonObject user = new JsonParser().parse(docString).getAsJsonObject();
+//            System.out.println(user);
+            allUsers.add(user);
+//            System.out.println(allUsers);
+//            System.out.println(doc);
+//            JsonObject user = new JsonObject();
+//            for (Map.Entry<String, Object> entry: doc.entrySet()
+//                 ) {
+//                String key = entry.getKey();
+//                JsonElement value = (JsonElement) entry.getValue();
+//                user.add(key, value);
+//            }
+////            String docId = (String) doc.get("_id");
+////            doc.put(("id"), docId);
+////            doc.remove("_id");
+//            JsonElement jsonElement = new JsonObject();
+//            jsonElement.
+//            String herjhejrh = doc.toJson();
+//            allUsers.add(user);
         }
 
-//        Document allUsers = new Document();
-//        allUsers.put("users", userDocs);
-
+//        System.out.println(allUsers);
         return allUsers;
     }
 
