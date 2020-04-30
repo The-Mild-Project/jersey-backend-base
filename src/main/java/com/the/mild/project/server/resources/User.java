@@ -106,7 +106,6 @@ public class User {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             JsonElement results = mongoHandlerDevelopTest.getAllUsers(USER_COLLECTION);
-            System.out.println(results);
             return Response
                     .ok(results.toString(), MediaType.APPLICATION_JSON)
                     .header("X-Total-Count", String.format("%d", results.getAsJsonArray().size()))
