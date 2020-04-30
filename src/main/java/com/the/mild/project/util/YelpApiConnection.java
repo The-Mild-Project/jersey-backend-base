@@ -14,18 +14,50 @@ public class YelpApiConnection {
 
     private static final String clientId = System.getenv("YELP_CLIENT_ID");
     private static final String apiKey = System.getenv("YELP_API_KEY");
-    private static final String location = "94122";
+    private static final String defaultLocation = "94122";
+    private static final String defaultCategory = "food";
     private static final String yelpUri = "https://api.yelp.com/v3";
 
     /**
+     * Gets a list of restaurants from the Yelp API in a specified area code and restaurant type.
+     * Default is to return 50 results.
+     *
+     * @param location
+     * @param rests
+     * @return
+     * @throws BadRequestException
+     */
+    public static JsonElement businessSearch(String location, String rests) throws BadRequestException {
+        String uri = String.format("%s/businesses/search?location=%s&categories=%s", yelpUri, location, rests);
+        String results = YelpApiConnection.yelpApiRequest(uri);
+        JsonObject json = new JsonParser().parse(results).getAsJsonObject();
+        return json.get("businesses");
+    }
+
+    /**
      * Gets a list of restaurants from the Yelp API in a specified area code.
+     * Default is to return 50 results.
+     *
+     * @param location
+     * @return
+     * @throws BadRequestException
+     */
+    public static JsonElement businessSearch(String location) throws BadRequestException {
+        String uri = String.format("%s/businesses/search?location=%s&categories=%s", yelpUri, location, defaultCategory);
+        String results = YelpApiConnection.yelpApiRequest(uri);
+        JsonObject json = new JsonParser().parse(results).getAsJsonObject();
+        return json.get("businesses");
+    }
+
+    /**
+     * Gets a list of restaurants from the Yelp API in the default area code.
      * Default is to return 50 results.
      *
      * @return
      * @throws BadRequestException
      */
     public static JsonElement businessSearch() throws BadRequestException {
-        String uri = String.format("%s/businesses/search?location=%s", yelpUri, location);
+        String uri = String.format("%s/businesses/search?location=%s&categories=%s", yelpUri, defaultLocation, defaultCategory);
         String results = YelpApiConnection.yelpApiRequest(uri);
         JsonObject json = new JsonParser().parse(results).getAsJsonObject();
         return json.get("businesses");
