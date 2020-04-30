@@ -1,9 +1,13 @@
 package com.the.mild.project.db.mongo;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -247,20 +251,17 @@ public final class MongoDocumentHandler {
             throw new CollectionNotFoundException(String.format("Collection %s was not found in the database.", collectionName));
         }
 
-//        ArrayList<Document> userDocs = new ArrayList<>();
-
+        JsonParser parser = new JsonParser();
         JsonArray allUsers = new JsonArray();
 
         for (Document doc: collection.find()) {
             String docId = (String) doc.get("_id");
             doc.put(("id"), docId);
             doc.remove("_id");
-            allUsers.add(doc.toString());
+            String docString = doc.toJson();
+            JsonObject user = parser.parse(docString).getAsJsonObject();
+            allUsers.add(user);
         }
-
-//        Document allUsers = new Document();
-//        allUsers.put("users", userDocs);
-
         return allUsers;
     }
 
