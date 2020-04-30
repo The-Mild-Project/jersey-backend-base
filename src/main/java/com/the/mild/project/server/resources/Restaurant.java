@@ -18,11 +18,22 @@ public class Restaurant {
     @GET
     @Path(PATH_ALL_RESTAURANTS)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRestaurants() {
+    public Response getRestaurants(@QueryParam("zip") String zip, @QueryParam("type") String type) {
         try {
-            JsonElement json = YelpApiConnection.businessSearch();
+            JsonElement json;
+            if (type != null) {
+                json = YelpApiConnection.businessSearch(zip, type);
+            } else if (zip != null) {
+                json = YelpApiConnection.businessSearch(zip);
+            } else {
+                json = YelpApiConnection.businessSearch();
+            }
+
             int numElements = json.getAsJsonArray().size();
-            return Response.ok(json.toString(), MediaType.APPLICATION_JSON).header("X-Total-Count", String.format("%d", numElements)).build();
+            return Response
+                    .ok(json.toString(), MediaType.APPLICATION_JSON)
+                    .header("X-Total-Count", String.format("%d", numElements))
+                    .build();
         } catch (BadRequestException e) {
             e.printStackTrace();
             return Response.status(400).build();
