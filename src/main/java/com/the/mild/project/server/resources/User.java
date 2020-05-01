@@ -1,7 +1,6 @@
 package com.the.mild.project.server.resources;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mongodb.client.MongoDatabase;
 import com.the.mild.project.MongoDatabaseType;
@@ -22,7 +21,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 
 @Singleton
 @Path(PATH_USER_RESOURCE)
@@ -105,12 +103,12 @@ public class User {
             if (payload == null) {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
-            JsonElement results = mongoHandlerDevelopTest.getAllUsers(USER_COLLECTION);
+            JsonElement results = mongoHandlerDevelopTest.getAllDocs(USER_COLLECTION);
             return Response
                     .ok(results.toString(), MediaType.APPLICATION_JSON)
                     .header("X-Total-Count", String.format("%d", results.getAsJsonArray().size()))
                     .build();
-        } catch (GeneralSecurityException | CollectionNotFoundException |IOException e) {
+        } catch (GeneralSecurityException | CollectionNotFoundException | IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
         }

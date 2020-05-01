@@ -35,11 +35,20 @@ public final class ResourceConfig {
     public static final String PATH_TO_RESTAURANT = "/{id}";
     public static final String PATH_TO_REVIEWS = "/reviews/{id}";
 
+    // Preferences paths
+    public static final String PATH_PREFERENCES = "/preferences";
+    public static final String PATH_PREFERENCES_GET_ALL = "/get/all";
+    public static final String PATH_PREFERENCES_GET_USER = "/get";
+    public static final String PATH_PREFERENCES_SET = "/set";
+    public static final String PATH_PREFERENCES_UPDATE = "/update";
+    public static final String PATH_PREFERENCES_DELETE = "/delete";
+
     // System wide vars
     public static final String MONGO_ID_FIELD = "_id";
     public static final String GOOGLE_ID = "googleId";
     public static final String SESSION_COLLECTION = "session";
     public static final String USER_COLLECTION = "user";
+    public static final String PREFERENCES_COLLECTION = "preferences";
     public static final String EMAIL = "email";
     public static final String FIRST_NAME = "firstName";
     public static final String LAST_NAME = "lastName";
