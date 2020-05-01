@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -221,6 +222,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException
      */
     public MongoDocumentHandler tryInsert(String collectionName, Document document) throws DocumentSerializationException, CollectionNotFoundException {
+        System.out.println(document);
 
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
@@ -230,7 +232,6 @@ public final class MongoDocumentHandler {
 
         FindIterable docs = collection.find(document);
         if (docs.first() == null) {
-//            throw new DocumentSerializationException("Document already exists in collection");
             collection.insertOne(document);
         }
 
@@ -238,13 +239,44 @@ public final class MongoDocumentHandler {
     }
 
     /**
-     * Get all users in the database, used for admin panel so admins can add or remove users.
+     * Insert a document, or replace one if it already exists.
+     *
+     * @param collectionName
+     * @param idDoc
+     * @param newDoc
+     * @return
+     * @throws CollectionNotFoundException
+     */
+    public boolean insertOrUpdate(String collectionName, Document idDoc, Document newDoc)
+            throws CollectionNotFoundException {
+        System.out.println(String.format("Insert or update %s", collectionName));
+
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if(collection == null) {
+            throw new CollectionNotFoundException(
+                    String.format("Collection %s was not found in the database.", collectionName)
+            );
+        }
+
+        FindIterable docs = collection.find(idDoc);
+        if (docs.first() == null) {
+            collection.insertOne(newDoc);
+            return true;
+        } else {
+            UpdateResult result = collection.replaceOne(idDoc, newDoc);
+            return result.wasAcknowledged();
+        }
+    }
+
+    /**
+     * Get all docs in a collection, used for admin panel.
      *
      * @param collectionName
      * @return
      * @throws CollectionNotFoundException
      */
-    public JsonArray getAllUsers(String collectionName) throws CollectionNotFoundException {
+    public JsonArray getAllDocs(String collectionName) throws CollectionNotFoundException {
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
@@ -263,6 +295,46 @@ public final class MongoDocumentHandler {
             allUsers.add(user);
         }
         return allUsers;
+    }
+
+    /**
+     * Returns a document associated with a specific ID.
+     *
+     * @param collectionName
+     * @param id
+     * @return
+     * @throws CollectionNotFoundException
+     */
+    public JsonElement getDocById(String collectionName, String id)
+            throws CollectionNotFoundException, DocumentSerializationException {
+        final MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        if (collection == null) {
+            throw new CollectionNotFoundException(
+                    String.format("Collection %s was not found in the database.", collectionName)
+            );
+        }
+
+        JsonParser parser = new JsonParser();
+
+        Document findDoc = new Document();
+        findDoc.put("_id", id);
+
+        FindIterable docs = collection.find(findDoc);
+        Document foundDoc = (Document) docs.first();
+        if (foundDoc == null) {
+            throw new DocumentSerializationException(
+                    String.format("ID does not exist in collection %s", collection)
+            );
+        }
+
+        foundDoc.put("id", id);
+        foundDoc.remove("_id");
+
+        String docString = foundDoc.toJson();
+        JsonObject results = parser.parse(docString).getAsJsonObject();
+
+        return results;
     }
 
     /**

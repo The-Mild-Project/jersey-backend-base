@@ -57,6 +57,7 @@ public class UserAuth {
             Payload payload = idToken.getPayload();
             return payload;
         } catch (IllegalArgumentException iae) {
+            System.out.println(iae.getMessage());
             return null;
         }
     }
