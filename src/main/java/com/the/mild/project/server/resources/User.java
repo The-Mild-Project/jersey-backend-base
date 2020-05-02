@@ -46,14 +46,21 @@ public class User {
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
+            String userEmail = payload.getEmail();
+            String firstName = payload.get(GIVEN_NAME).toString();
+            String lastName = payload.get(FAMILY_NAME).toString();
 
-            // Collect user doc
-            Document userDoc = new Document();
-            userDoc.put(MONGO_ID_FIELD, payload.getEmail());
-            userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
-            userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
+            Document exists = mongoHandlerDevelopTest.tryFindById(USER_COLLECTION, userEmail);
+            if (exists == null) {
+                // Collect user doc
+                Document userDoc = new Document();
+                userDoc.put(MONGO_ID_FIELD, payload.getEmail());
+                userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
+                userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
+                userDoc.put(ADMIN, false);
 
-            mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
+                mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
+            }
 
             // Collect session doc
             Document sessionDoc = new Document();

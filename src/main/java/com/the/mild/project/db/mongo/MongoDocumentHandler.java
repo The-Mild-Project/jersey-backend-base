@@ -54,6 +54,14 @@ public final class MongoDocumentHandler {
         return collection.find(doc);
     }
 
+    /**
+     * Finds a record in a given collection by its ID field.
+     *
+     * @param collectionName
+     * @param id
+     * @return
+     * @throws CollectionNotFoundException
+     */
     public Document tryFindById(String collectionName, String id) throws CollectionNotFoundException {
         final Document query = new Document();
         query.put("_id", id);
