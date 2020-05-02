@@ -55,6 +55,7 @@ public final class ResourceConfig {
     public static final String GIVEN_NAME = "given_name";
     public static final String FAMILY_NAME = "family_name";
     public static final String EXPIRATION_DATE = "exp";
+    public static final String ADMIN = "admin";
 
     // public enum Resource {
     //     PATH_TEST_RESOURCE("testresource");
