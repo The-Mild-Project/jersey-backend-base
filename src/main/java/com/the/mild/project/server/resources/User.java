@@ -15,16 +15,18 @@ import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
 
 import javax.inject.Singleton;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 @Singleton
 @Path(PATH_USER_RESOURCE)
 public class User {
+
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private static final MongoDatabaseFactory mongoFactory;
     private static final MongoDocumentHandler mongoHandlerDevelopTest;
@@ -41,8 +43,14 @@ public class User {
     @GET
     @Path(PATH_LOGIN)
     public Response createAndLogin(@Context HttpHeaders headers) {
-        System.out.println("create and login");
+
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
+
+        for (Map.Entry<String, List<String>> entry: headers.getRequestHeaders().entrySet()) {
+            System.out.println(String.format("%s : %s", entry.getKey(), entry.getValue()));
+        }
+
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
@@ -54,9 +62,9 @@ public class User {
             if (exists == null) {
                 // Collect user doc
                 Document userDoc = new Document();
-                userDoc.put(MONGO_ID_FIELD, payload.getEmail());
-                userDoc.put(FIRST_NAME, payload.get(GIVEN_NAME));
-                userDoc.put(LAST_NAME, payload.get(FAMILY_NAME));
+                userDoc.put(MONGO_ID_FIELD, userEmail);
+                userDoc.put(FIRST_NAME, firstName);
+                userDoc.put(LAST_NAME, lastName);
                 userDoc.put(ADMIN, false);
 
                 mongoHandlerDevelopTest.tryInsert(USER_COLLECTION, userDoc);
@@ -70,7 +78,7 @@ public class User {
 
             mongoHandlerDevelopTest.tryInsert(SESSION_COLLECTION, sessionDoc);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -81,6 +89,8 @@ public class User {
     @Path(PATH_LOGOUT)
     public Response logoutUser(@Context HttpHeaders headers) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
+
         try {
 //            TODO: NEED TO FIX THIS FOR TESTING, IDS ARE RANDOM RIGHT NOW
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
@@ -93,7 +103,7 @@ public class User {
             document.put(MONGO_ID_FIELD, googleId);
             Document result = mongoHandlerDevelopTest.tryDelete(SESSION_COLLECTION, document);
         } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -105,6 +115,7 @@ public class User {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers(@Context HttpHeaders headers) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
             if (payload == null) {
@@ -116,7 +127,7 @@ public class User {
                     .header("X-Total-Count", String.format("%d", results.getAsJsonArray().size()))
                     .build();
         } catch (GeneralSecurityException | CollectionNotFoundException | IOException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
@@ -126,6 +137,8 @@ public class User {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@Context HttpHeaders headers, @PathParam("username") String userName) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
+
         Document results;
         Document res = new Document();
 
@@ -138,10 +151,11 @@ public class User {
 
             results = mongoHandlerDevelopTest.tryDelete(USER_COLLECTION, userName);
             res.put("id", results.getString("_id"));
-        } catch (GeneralSecurityException | CollectionNotFoundException | DocumentSerializationException | IOException e) {
-            e.printStackTrace();
+            return Response.ok(res).build();
+        } catch (GeneralSecurityException | CollectionNotFoundException |
+                DocumentSerializationException | IOException e) {
+            log.warning(e.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-
-        return Response.ok(res).build();
     }
 }

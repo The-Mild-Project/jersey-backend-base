@@ -9,8 +9,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import java.util.logging.Logger;
 
 public class YelpApiConnection {
+
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private static final String clientId = System.getenv("YELP_CLIENT_ID");
     private static final String apiKey = System.getenv("YELP_API_KEY");
@@ -28,6 +31,7 @@ public class YelpApiConnection {
      * @throws BadRequestException
      */
     public static JsonElement businessSearch(String location, String rests) throws BadRequestException {
+        log.info(String.format("%s : %s", location, rests));
         String uri = String.format("%s/businesses/search?location=%s&categories=%s", yelpUri, location, rests);
         String results = YelpApiConnection.yelpApiRequest(uri);
         JsonObject json = new JsonParser().parse(results).getAsJsonObject();
@@ -43,6 +47,7 @@ public class YelpApiConnection {
      * @throws BadRequestException
      */
     public static JsonElement businessSearch(String location) throws BadRequestException {
+        log.info(location);
         String uri = String.format("%s/businesses/search?location=%s&categories=%s", yelpUri, location, defaultCategory);
         String results = YelpApiConnection.yelpApiRequest(uri);
         JsonObject json = new JsonParser().parse(results).getAsJsonObject();
@@ -57,6 +62,7 @@ public class YelpApiConnection {
      * @throws BadRequestException
      */
     public static JsonElement businessSearch() throws BadRequestException {
+        log.info("Default search");
         String uri = String.format("%s/businesses/search?location=%s&categories=%s", yelpUri, defaultLocation, defaultCategory);
         String results = YelpApiConnection.yelpApiRequest(uri);
         JsonObject json = new JsonParser().parse(results).getAsJsonObject();
@@ -73,6 +79,7 @@ public class YelpApiConnection {
      * @throws BadRequestException
      */
     public static String businessSearchWithReviews(String businessId, Boolean reviews) throws BadRequestException {
+        log.info(String.format("%s : %s", businessId, reviews));
         String uri = String.format("%s/businesses/%s", yelpUri, businessId);
         if (reviews) {
             uri = uri + "/reviews";
@@ -89,12 +96,13 @@ public class YelpApiConnection {
      * @throws BadRequestException
      */
     private static String yelpApiRequest(String uri) throws BadRequestException {
+        log.info(uri);
         Client client = ClientBuilder.newClient();
         try {
             WebTarget resource = client.target(String.format(uri));
             return resource.request(MediaType.APPLICATION_JSON).header("Authorization", String.format("Bearer %s", apiKey)).get(String.class);
         } catch (BadRequestException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
             throw new BadRequestException(e.getMessage());
         } finally {
             client.close();

@@ -1,6 +1,5 @@
 package com.the.mild.project.server.resources;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.the.mild.project.util.YelpApiConnection;
 
@@ -9,16 +8,21 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.logging.Logger;
+
 import static com.the.mild.project.ResourceConfig.*;
 
 @Singleton
 @Path(PATH_RESTAURANT_RESOURCE)
 public class Restaurant {
 
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     @GET
     @Path(PATH_ALL_RESTAURANTS)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRestaurants(@QueryParam("zip") String zip, @QueryParam("type") String type) {
+        log.info(String.format("%s : %s", zip, type));
         try {
             JsonElement json;
             if (type != null) {
@@ -35,7 +39,7 @@ public class Restaurant {
                     .header("X-Total-Count", String.format("%d", numElements))
                     .build();
         } catch (BadRequestException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.status(400).build();
         }
     }
@@ -44,12 +48,12 @@ public class Restaurant {
     @Path(PATH_TO_RESTAURANT)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRestaurant(@PathParam("id") String id) {
-
+        log.info(id);
         try {
             String rest = YelpApiConnection.businessSearchWithReviews(id, false);
             return Response.ok(rest).build();
         } catch (BadRequestException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.status(400).build();
         }
     }
@@ -58,11 +62,12 @@ public class Restaurant {
     @Path(PATH_TO_REVIEWS)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRestaurantReviews(@PathParam("id") String id) {
+        log.info(id);
         try {
             String rest = YelpApiConnection.businessSearchWithReviews(id, true);
             return Response.ok(rest).build();
         } catch (BadRequestException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
             return Response.status(400).build();
         }
     }

@@ -11,9 +11,11 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 public class UserAuth {
 
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private static final String clientId = "GOOGLE_CLIENT_ID";
 
     /**
@@ -26,6 +28,8 @@ public class UserAuth {
      * @throws GeneralSecurityException
      */
     public static Payload checkAuth(String idTokenString) throws IOException, GeneralSecurityException {
+
+        log.info(idTokenString);
 
         String CLIENT_ID = "GOOGLE_CLIENT_ID";
         String clientId = System.getenv(CLIENT_ID);
@@ -56,8 +60,8 @@ public class UserAuth {
             idToken = verifier.verify(idTokenString);
             Payload payload = idToken.getPayload();
             return payload;
-        } catch (IllegalArgumentException iae) {
-            System.out.println(iae.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warning(e.getMessage());
             return null;
         }
     }

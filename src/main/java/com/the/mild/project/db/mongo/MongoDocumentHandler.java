@@ -1,8 +1,7 @@
 package com.the.mild.project.db.mongo;
 
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -25,6 +24,8 @@ import com.the.mild.project.db.mongo.exceptions.DocumentSerializationException;
 
 public final class MongoDocumentHandler {
 
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     private static final UpdateOptions updateOptions = new UpdateOptions();
     private static final FindOneAndUpdateOptions findOneAndUpdateOptions = new FindOneAndUpdateOptions();
 
@@ -40,6 +41,7 @@ public final class MongoDocumentHandler {
     }
 
     public FindIterable<Document> tryFindAll(QueryDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+        log.info(document.toString());
         checkIfCanQueryDocument(document);
 
         final String collectionName = getCollectionName(document);
@@ -63,6 +65,8 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException
      */
     public Document tryFindById(String collectionName, String id) throws CollectionNotFoundException {
+        log.info(String.format("%s : %s", collectionName, id));
+
         final Document query = new Document();
         query.put("_id", id);
 
@@ -79,6 +83,7 @@ public final class MongoDocumentHandler {
     }
 
     public Document tryFindOne(String collectionName, DocumentEntry<?>... entries) throws CollectionNotFoundException {
+        log.info(collectionName);
         final Document query = new Document();
         for(DocumentEntry<?> entry : entries) {
             query.put(entry.getKey(), entry.getValue());
@@ -96,7 +101,9 @@ public final class MongoDocumentHandler {
         return next;
     }
 
-    public void tryUpdateOne(String collectionName, Document original, Document update) throws CollectionNotFoundException {
+    public void tryUpdateOne(String collectionName, Document original, Document update)
+            throws CollectionNotFoundException {
+        log.info(String.format("%s : %s, %s", collectionName, original.toString(), update.toString()));
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if(collection == null) {
@@ -107,6 +114,7 @@ public final class MongoDocumentHandler {
     }
 
     public void tryUpdateOne(String collectionName, Document original, DocumentEntry<?>... entries) throws CollectionNotFoundException {
+        log.info(String.format("%s : %s", collectionName, original.toString()));
         final Document update = new Document();
         final Document set = new Document();
         for(DocumentEntry<?> entry : entries) {
@@ -124,6 +132,7 @@ public final class MongoDocumentHandler {
     }
 
     public void tryUpdateOneById(String collectionName, String id, DocumentEntry<?>... entries) throws CollectionNotFoundException {
+        log.info(String.format("%s : %s", collectionName, id));
         final ObjectId objectId = new ObjectId(id);
         final Document update = new Document();
         final Document set = new Document();
@@ -147,6 +156,7 @@ public final class MongoDocumentHandler {
     }
 
     public void tryUpdateOneById(String collectionName, String id, InsertDocument update) throws CollectionNotFoundException {
+        log.info(String.format("%s : %s",collectionName, id));
         final MongoCollection<Document> collection = database.getCollection(collectionName);
         final ObjectId objectId = new ObjectId(id);
 
@@ -156,10 +166,11 @@ public final class MongoDocumentHandler {
 
         final Document set = new Document(MongoModifiers.SET.getModifier(), update.getDocument());
         final Document d = collection.findOneAndUpdate(new Document("_id", objectId), set, findOneAndUpdateOptions);
-        System.out.printf("d=%s\n", d);
+        log.info(String.format("d=%s\n", d));
     }
 
     public void tryUpdateOneById(String collectionName, String id, Document update) throws CollectionNotFoundException {
+        log.info(String.format("%s : %s, %s", collectionName, id, update.toString()));
         final MongoCollection<Document> collection = database.getCollection(collectionName);
         final ObjectId objectId = new ObjectId(id);
 
@@ -169,7 +180,7 @@ public final class MongoDocumentHandler {
 
         final Document set = new Document(MongoModifiers.SET.getModifier(), update);
         final Document d = collection.findOneAndUpdate(new Document("_id", objectId), set, findOneAndUpdateOptions);
-        System.out.printf("d=%s\n", d);
+        log.info(String.format("d=%s\n", d));
     }
 
     /**
@@ -181,6 +192,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException If the collection name was not found in the database.
      */
     public MongoDocumentHandler tryInsert(InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+        log.info(document.toString());
         checkIfCanInsertDocument(document);
 
         final String collectionName = getCollectionName(document);
@@ -206,6 +218,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException
      */
     public MongoDocumentHandler tryInsert(String collectionName, InsertDocument document) throws DocumentSerializationException, CollectionNotFoundException {
+        log.info(String.format("%s : %s", collectionName, document.toString()));
         checkIfCanInsertDocument(document);
 
         final MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -230,7 +243,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException
      */
     public MongoDocumentHandler tryInsert(String collectionName, Document document) throws DocumentSerializationException, CollectionNotFoundException {
-        System.out.println(document);
+        log.info(String.format("%s : %s", collectionName, document.toString()));
 
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
@@ -257,7 +270,7 @@ public final class MongoDocumentHandler {
      */
     public boolean insertOrUpdate(String collectionName, Document idDoc, Document newDoc)
             throws CollectionNotFoundException {
-        System.out.println(String.format("Insert or update %s", collectionName));
+        log.info(String.format("%s : %s, %s", collectionName, idDoc, newDoc));
 
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
@@ -273,6 +286,7 @@ public final class MongoDocumentHandler {
             return true;
         } else {
             UpdateResult result = collection.replaceOne(idDoc, newDoc);
+            log.info(String.valueOf(result.wasAcknowledged()));
             return result.wasAcknowledged();
         }
     }
@@ -285,6 +299,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException
      */
     public JsonArray getAllDocs(String collectionName) throws CollectionNotFoundException {
+        log.info(collectionName);
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
@@ -315,6 +330,7 @@ public final class MongoDocumentHandler {
      */
     public JsonElement getDocById(String collectionName, String id)
             throws CollectionNotFoundException, DocumentSerializationException {
+        log.info(String.format("%s : %s", collectionName, id));
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
@@ -354,6 +370,7 @@ public final class MongoDocumentHandler {
      * @throws CollectionNotFoundException
      */
     public Document tryDelete(String collectionName, Document document) throws CollectionNotFoundException, DocumentSerializationException {
+        log.info(String.format("%s : %s", collectionName, document.toString()));
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         if (collection == null) {
@@ -377,6 +394,7 @@ public final class MongoDocumentHandler {
      * @throws DocumentSerializationException
      */
     public Document tryDelete(String collectionName, String id) throws CollectionNotFoundException, DocumentSerializationException {
+        log.info(String.format("%s : %s", collectionName, id));
         final MongoCollection<Document> collection = database.getCollection(collectionName);
 
         Document document = new Document();
@@ -394,6 +412,7 @@ public final class MongoDocumentHandler {
     }
 
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
+        log.info(document.toString());
         final boolean isNull = checkIfNull(document);
         if(isNull) {
             throw new DocumentSerializationException("The object to serialize is null");
@@ -406,6 +425,7 @@ public final class MongoDocumentHandler {
     }
 
     private void checkIfCanInsertDocument(InsertDocument document) throws DocumentSerializationException {
+        log.info(document.toString());
         final boolean isNull = checkIfNull(document);
         if(isNull) {
             throw new DocumentSerializationException("The object to serialize is null");
@@ -423,10 +443,12 @@ public final class MongoDocumentHandler {
     }
 
     private boolean checkIfNull(BaseDocument document) {
+        log.info(document.toString());
         return Objects.isNull(document);
     }
 
     private Validity checkIfSerializable(BaseDocument document) throws DocumentSerializationException {
+        log.info(document.toString());
         final Validity validity = new Validity();
         final Class<?> dClass = document.getClass();
 
@@ -440,6 +462,7 @@ public final class MongoDocumentHandler {
     }
 
     private Validity checkIfHasKeys(InsertDocument document) throws DocumentSerializationException {
+        log.info(document.toString());
         final Validity validity = new Validity();
         final Class<? extends InsertDocumentEntry> entryClass = document.getEntryClass();
 
@@ -458,6 +481,7 @@ public final class MongoDocumentHandler {
      * @return collectionName
      */
     private String getCollectionName(BaseDocument document) {
+        log.info(document.toString());
         final Class<?> dClass = document.getClass();
         final DocumentSerializable annotation = dClass.getAnnotation(DocumentSerializable.class);
 
