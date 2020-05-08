@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  title: Mild Project API
+  description: This is the API for our backend server for our CS686 project.
+  contact:
+    email: athompson6@dons.usfca.edu
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/palex88/MildProjectAPI/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://foodapp-template.herokuapp.com/test/
+  description: Mild Project Backend Server
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: developers
+  description: Operations available to regular developers
+paths:
+  /user/login:
+    get:
+      tags:
+      - developers
+      summary: creates and logs a user in to the system
+      description: |
+        This endpoint allows for a user to be create and/or login. When a user authenticates with Google OAuth service, their an auth token is sent from Google that can be passes to this endpoint. The endpoint verifies the token with Google and logs the user in.
+      operationId: createAndLogin
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+        "400":
+          description: token is not valid
+  /user/logout:
+    get:
+      tags:
+      - developers
+      summary: logs a user out of the system
+      description: |
+        This endpoint logs out a user. Their token will be removed from the session database.
+      operationId: logoutUser
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified, user has been logged out
+        "400":
+          description: token is not valid
+  /user/all:
+    get:
+      tags:
+      - admins
+      summary: get a list of all users
+      description: |
+        Returns a list of all users int the system. If the user requesting is an admin then the list is returned.
+      operationId: getAllUsers
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+        "400":
+          description: token is not valid
+  /user/all/{username}:
+    get:
+      tags:
+      - admins
+      summary: delete a user from the system
+      description: |
+        Deletes a user form the system. It will remove the user and all their associated sessions form the database. Header token need to be verified as an admin to delete another user.
+      operationId: deleteUser
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: username
+        in: path
+        description: pass in the id of the user to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+        "400":
+          description: token is not valid
+  /preferences/get:
+    get:
+      tags:
+      - developers
+      summary: gets a users preferences
+      description: |
+        Gets a users list of preferences from the database.
+      operationId: getUserPreferences
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPreferences'
+        "400":
+          description: token is not valid
+  /preferences/get/all:
+    get:
+      tags:
+      - admins
+      summary: get all users preferences
+      description: |
+        Gets a users list of preferences from the database for all users.
+      operationId: getAllPreferences
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllUserPreferences'
+        "400":
+          description: token is not valid
+  /preferences/set:
+    post:
+      tags:
+      - developers
+      summary: set a users preferences
+      description: |
+        Sets preferences for a user.
+      operationId: setPreferences
+      parameters:
+      - name: googleId
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: preferencesList
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: token has been verified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPreferences'
+        "400":
+          description: token is not valid
+  /restaurant/all:
+    get:
+      tags:
+      - developers
+      summary: gets a lits of all restaurants
+      description: |
+        Gets a list of all restaurants from the Yelp API connector based on a given zip and categories.
+      operationId: getRestaurants
+      parameters:
+      - name: zip
+        in: query
+        description: zip code to search within
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: type of food to search for
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllRestaurants'
+        "400":
+          description: token is not valid
+  /restaurant/{id}:
+    get:
+      tags:
+      - developers
+      summary: gets data for a specific restaurant
+      description: |
+        Gets the data for a specific restaurant for a passed in ID.
+      operationId: getRestaurant
+      parameters:
+      - name: id
+        in: path
+        description: pass in the id of the restaurant to be searched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Restaurant'
+        "400":
+          description: token is not valid
+  /restaurant/reviews/{id}:
+    get:
+      tags:
+      - developers
+      summary: gets reviews for a specific restaurant
+      description: |
+        Gets the reviews for a specific restaurant for a passed in ID.
+      operationId: getRestaurantReviews
+      parameters:
+      - name: id
+        in: path
+        description: pass in the id of the restaurant to be searched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: token has been verified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reviews'
+        "400":
+          description: token is not valid
+components:
+  schemas:
+    UserPreferences:
+      required:
+      - food
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: email
+          example: test@test
+        food:
+          type: array
+          example:
+          - food1
+          - food2
+          - food3
+          items:
+            type: string
+    AllUserPreferences:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserPreferences'
+    Restaurant:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          example: bTkqsphmEuYd8Ck7vovRkQ
+    AllRestaurants:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Restaurant'
+    Reviews:
+      properties:
+        reviews:
+          type: array
+          items:
+            type: object
+        total:
+          type: integer
+        possible_languages:
+          type: array
+          items:
+            type: string
