@@ -19,7 +19,8 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 import static com.the.mild.project.ResourceConfig.*;
 import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
@@ -27,6 +28,8 @@ import static com.the.mild.project.server.Main.MONGO_DB_FACTORY;
 @Singleton
 @Path(PATH_PREFERENCES)
 public class Preferences {
+
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private static final MongoDatabaseFactory mongoFactory;
     private static final MongoDocumentHandler mongoHandlerDevelopTest;
@@ -45,10 +48,12 @@ public class Preferences {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPreferences(@Context HttpHeaders headers) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
             if (payload == null) {
+                log.warning("Unable to login");
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             JsonElement results = mongoHandlerDevelopTest.getAllDocs(PREFERENCES_COLLECTION);
@@ -67,11 +72,13 @@ public class Preferences {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserPreferences(@Context HttpHeaders headers) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
             System.out.println(payload);
             if (payload == null) {
+                log.warning("Unable to login");
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             String email = payload.getEmail();
@@ -89,14 +96,15 @@ public class Preferences {
     @POST
     @Path(PATH_PREFERENCES_SET)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setPreferences(@Context HttpHeaders headers, ArrayList preferencesList) {
+    public Response setPreferences(@Context HttpHeaders headers, List preferencesList) {
         String googleId = headers.getHeaderString(GOOGLE_ID);
+        log.info(googleId.substring(0,10));
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
             System.out.println(payload);
             if (payload == null) {
-                System.out.println("unable to log in");
+                log.warning("Unable to login");
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             String userEmail = payload.getEmail();
@@ -108,16 +116,16 @@ public class Preferences {
             prefDoc.put("_id", userEmail);
             prefDoc.put("food", preferencesList);
 
-
             Boolean didUpdate = mongoHandlerDevelopTest.insertOrUpdate(PREFERENCES_COLLECTION, idDoc, prefDoc);
             System.out.println(didUpdate);
+            log.info(String.format("Did update: %s", didUpdate));
             if (didUpdate) {
                 return Response.ok().build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
         } catch (GeneralSecurityException | IOException | CollectionNotFoundException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
