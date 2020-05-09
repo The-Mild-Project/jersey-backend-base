@@ -22,6 +22,8 @@ import com.the.mild.project.db.mongo.annotations.DocumentSerializable;
 import com.the.mild.project.db.mongo.exceptions.CollectionNotFoundException;
 import com.the.mild.project.db.mongo.exceptions.DocumentSerializationException;
 
+import static com.the.mild.project.ResourceConfig.USER_COLLECTION;
+
 public final class MongoDocumentHandler {
 
     private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -409,6 +411,27 @@ public final class MongoDocumentHandler {
             throw new DocumentSerializationException("Document does not exist");
         }
         return collection.findOneAndDelete(session);
+    }
+
+    /**
+     * Checks if a user is an admin.
+     *
+     * @param email
+     * @return
+     */
+    public boolean checkForAdmin(String email) {
+        log.info(String.format("check is admin %s", email));
+
+        final MongoCollection<Document> collection = database.getCollection(USER_COLLECTION);
+
+        Document document = new Document();
+        document.put("_id", email);
+
+        FindIterable<Document> users = collection.find(document);
+        Document user = users.first();
+        if (user == null) return false;
+
+        return (boolean) user.get("admin");
     }
 
     private void checkIfCanQueryDocument(QueryDocument document) throws DocumentSerializationException {
