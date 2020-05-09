@@ -56,6 +56,12 @@ public class Preferences {
                 log.warning("Unable to login");
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
+
+            String email = payload.getEmail();
+            if (!mongoHandlerDevelopTest.checkForAdmin(email)) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+            
             JsonElement results = mongoHandlerDevelopTest.getAllDocs(PREFERENCES_COLLECTION);
             return Response
                     .ok(results.toString(), MediaType.APPLICATION_JSON)

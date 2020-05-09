@@ -94,7 +94,7 @@ public class User {
         try {
 //            TODO: NEED TO FIX THIS FOR TESTING, IDS ARE RANDOM RIGHT NOW
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
-
+            System.out.println(payload);
             // payload is null then the googleId could not be verified, return 401
             if (payload == null) {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -121,6 +121,12 @@ public class User {
             if (payload == null) {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
+
+            String email = payload.getEmail();
+            if (!mongoHandlerDevelopTest.checkForAdmin(email)) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+
             JsonElement results = mongoHandlerDevelopTest.getAllDocs(USER_COLLECTION);
             return Response
                     .ok(results.toString(), MediaType.APPLICATION_JSON)
@@ -144,13 +150,18 @@ public class User {
 
         try {
             GoogleIdToken.Payload payload = UserAuth.checkAuth(googleId);
-
             if (payload == null) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+
+            String email = payload.getEmail();
+            if (!mongoHandlerDevelopTest.checkForAdmin(email)) {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
 
             results = mongoHandlerDevelopTest.tryDelete(USER_COLLECTION, userName);
             res.put("id", results.getString("_id"));
+
             return Response.ok(res).build();
         } catch (GeneralSecurityException | CollectionNotFoundException |
                 DocumentSerializationException | IOException e) {
