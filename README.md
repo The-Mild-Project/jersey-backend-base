@@ -14,7 +14,7 @@ The application will properly build and run with Java 11 or greater.
 2. `mvn clean package` - builds Java binaries
 3. `mvn exec:java -Dexec.mainClass=com.the.mild.project.server.Main` - runs locally
 
-### Require Env Variables
+### Required Env Variables
 
 There are a few required env variables to be able to run the application locally.
 
@@ -49,7 +49,7 @@ We chose Heroku for our live deployment of the application. We chose this becaus
 - The application is currently deployed on live servers hosted via [Heroku](https://www.heroku.com).
 - The live application can be accessed [here](https://foodapp-user-service.herokuapp.com/).
 - The REST API endpoints return JSON. An example can be seen [here](https://foodapp-user-service.herokuapp.com/test/restaurant/all).
-- For a breakdown if API endpoints, see Open API Documentation section. 
+- For a breakdown of API endpoints, see Open API Documentation section. 
 
 ## Open API Documentation
 
